@@ -1,18 +1,55 @@
 //your variable declarations here
+SpaceShip bob = new SpaceShip();
 public void setup() 
 {
   size(600, 600);
   background(0);
 }
+
 public void draw() 
 {
   //your code here
+  background(0);
+  bob.show();
+  bob.move();
+  // bob.rotate();
+  // bob.rotate(rad);
 }
+
+public void keyPressed()
+{
+
+  if (key==CODED)
+  {
+    if (keyCode == LEFT)
+    {
+      bob.setDirectionX(-4);
+    }
+    if (keyCode == RIGHT)
+    {
+      bob.setDirectionX(4);
+    }
+    if (keyCode == UP)
+    {
+      bob.rotate(-15);
+    }
+    if (keyCode == DOWN)
+    {
+      bob.rotate(15);
+    }
+  }
+  if (key == ' ')
+  {
+    bob.accelerate(5);
+  }
+    
+}
+
 class SpaceShip extends Floater  
 {   
   SpaceShip()
   {
-    corners=3;
+    corners = 3;
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners[0]=-8;
@@ -21,13 +58,27 @@ class SpaceShip extends Floater
     yCorners[1]=-8;
     xCorners[2]=16;
     yCorners[2]=0;
-    int myColor = 255;
+    myColor = 255;
     myCenterX = width/2;
     myCenterY = height/2;
-    myDirectionX
-
+    myDirectionX = 0;
+    myDirectionY = 0;
+    myPointDirection = 0;
   }
+
+    public void setX(int x) { myCenterX = x;}
+    public int getX() {return (int)myCenterX;} 
+    public void setY(int y){myCenterY = y;}
+    public int getY(){return (int)myCenterY;}
+    public void setDirectionX(double x) { myDirectionX = x;}
+    public double getDirectionX(){ return (double)myDirectionX;} 
+    public void setDirectionY(double y) {myDirectionY = y;}
+    public double getDirectionY(){return (double)myDirectionY;}
+    public void setPointDirection(int degrees) { myPointDirection = degrees; }
+    public double getPointDirection() { return (double)myPointDirection;}
+  
 }
+
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
   protected int corners;  //the number of corners, a triangular floater has 3   
@@ -56,12 +107,14 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     //change coordinates of direction of travel    
     myDirectionX += ((dAmount) * Math.cos(dRadians));    
     myDirectionY += ((dAmount) * Math.sin(dRadians));       
-  }   
+  }  
+
   public void rotate (int nDegreesOfRotation)   
   {     
     //rotates the floater by a given number of degrees    
     myPointDirection+=nDegreesOfRotation;   
   }   
+
   public void move ()   //move the floater in the current direction of travel
   {      
     //change the x and y coordinates by myDirectionX and myDirectionY       
@@ -86,6 +139,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
       myCenterY = height;    
     }   
   }   
+
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
@@ -102,6 +156,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
       vertex(xRotatedTranslated,yRotatedTranslated);    
     }   
     endShape(CLOSE);  
-  }   
+  } 
+
 } 
 
