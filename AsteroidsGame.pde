@@ -1,66 +1,73 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
+Stars [] backgroundStars = new Stars[100];
 public void setup() 
 {
   size(600, 600);
   background(0);
+  for (int i = 0; i<backgroundStars.length; i++)
+  {
+    backgroundStars[i]=new Stars();
+  }
 }
+
 
 public void draw() 
 {
   //your code here
   background(0);
+  for (int i = 0; i<backgroundStars.length; i++)
+  {
+    backgroundStars[i].show();
+  }
+
   bob.show();
   bob.move();
-  // bob.rotate();
-  // bob.rotate(rad);
 }
 
 public void keyPressed()
 {
-
+             
   if (key==CODED)
   {
-    if (keyCode == LEFT)
-    {
-      bob.setDirectionX(-4);
-    }
-    if (keyCode == RIGHT)
-    {
-      bob.setDirectionX(4);
-    }
     if (keyCode == UP)
+    {
+      bob.setDirectionY(-4);
+    }
+    if (keyCode == DOWN)
+    {
+      bob.setDirectionY(4);
+    }
+    if (keyCode == LEFT)
     {
       bob.rotate(-15);
     }
-    if (keyCode == DOWN)
+    if (keyCode == RIGHT)
     {
       bob.rotate(15);
     }
   }
   if (key == ' ')
   {
-    bob.accelerate(5);
+    bob.accelerate(1);
   }
-    
+
 }
 
 class SpaceShip extends Floater  
 {   
   SpaceShip()
   {
-    corners = 3;
+    corners = 10;
+    int [] xS = {14,1,-10,-4,-6,-8,-8,-4,-10,1};
+    int [] yS = {0,18,18,9,6,6,-6,-9,-18,-18};
     xCorners = new int[corners];
     yCorners = new int[corners];
-    xCorners[0]=-8;
-    yCorners[0]=8;
-    xCorners[1]=-8;
-    yCorners[1]=-8;
-    xCorners[2]=16;
-    yCorners[2]=0;
+    xCorners = xS;
+    yCorners = yS;
     myColor = 255;
-    myCenterX = width/2;
-    myCenterY = height/2;
+    myCenterX = 300;
+    myCenterY = 300;
     myDirectionX = 0;
     myDirectionY = 0;
     myPointDirection = 0;
@@ -158,5 +165,23 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     endShape(CLOSE);  
   } 
 
+}
+
+class Stars
+{
+  private int myX, myY, mySize, myOpacity;
+  Stars ()
+  {
+    myX = (int)(Math.random()*width);
+    myY = (int)(Math.random()*height);
+    mySize = (int)(Math.random()*7+2);
+    myOpacity = (int)(Math.random()*100);
+  }
+  public void show()
+  {
+    noStroke();
+    fill(255,255,153, myOpacity);
+    ellipse(myX, myY, mySize, mySize);
+  }
 } 
 
