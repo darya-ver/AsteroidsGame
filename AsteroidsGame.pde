@@ -54,6 +54,14 @@ public void keyPressed()
 
 }
 
+public void keyTyped()
+{
+  if (key == 'r')
+  {
+    bob.setX((int)(Math.random()*width));
+    bob.setY((int)(Math.random()*height));
+  }
+}
 class SpaceShip extends Floater  
 {   
   SpaceShip()
