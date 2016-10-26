@@ -1,6 +1,7 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
 Stars [] backgroundStars = new Stars[100];
+
 public void setup() 
 {
   size(600, 600);
