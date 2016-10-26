@@ -21,9 +21,9 @@ footer {
 	font-size: 90%;
 }
 
-/*table {
-    color: rgb(255,0,0);
-}*/
+table {
+    background-color: rgb(200,200,200);
+}
 
 .colored {
     color: rgb(255,0,0);
