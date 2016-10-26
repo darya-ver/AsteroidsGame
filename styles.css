@@ -1,7 +1,7 @@
 
 body {
     background-color: rgb(200,200,200);
-    color: rgb(255,0,0);
+    
     font-family: "Open Sans", sans-serif;
     text-align: center;
 }
@@ -21,6 +21,10 @@ footer {
 	font-size: 90%;
 }
 
-table {
+/*table {
+    color: rgb(255,0,0);
+}*/
+
+.colored {
     color: rgb(255,0,0);
 }
