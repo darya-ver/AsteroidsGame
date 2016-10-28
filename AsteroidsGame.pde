@@ -63,7 +63,20 @@ public void keyPressed()
   }
   if (key == ' ')
   {
-    bob.accelerate(1);
+    if (bob.getDirectionX() <= 10)
+    {
+      bob.accelerate(1);
+    }
+    else {
+      
+    }
+    if (bob.getDirectionY() <= 10)
+    {
+      bob.accelerate(1);
+    }
+    else {
+      
+    }
   }
 }
 
