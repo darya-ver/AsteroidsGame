@@ -2,6 +2,7 @@
 SpaceShip bob = new SpaceShip();
 Stars [] backgroundStars = new Stars[100];
 Asteroids [] asteroidsList = new Asteroids[10];
+int score = 0;
 
 public void setup() 
 {
@@ -31,12 +32,20 @@ public void draw()
   for (int i = 0; i<asteroidsList.length; i++)
   {
     asteroidsList[i].show();
-    asteroidsList[i].rotate(asteroidsList[i].getRandomRotationSpeed());
+    asteroidsList[i].rotate(asteroidsList[i].getRotationSpeed());
     asteroidsList[i].move();
+
+    if (asteroidsList[i].getX() == bob.getX())
+    {
+      score += 1;
+    }
+
+    text("score:" + score,20,20);
   }
 
   bob.show();
   bob.move();
+
 }
 
 public void keyPressed()
@@ -122,8 +131,7 @@ class SpaceShip extends Floater
 
 class Asteroids extends Floater
 {
-  private int randomRotationSpeed, randomRotationSpeed2;
-  private double randomize, randomDirectionX, randomDirectionX2, randomDirectionY, randomDirectionY2;
+  private int rotationSpeed;
   Asteroids()
   {
     corners = 3;
@@ -139,9 +147,13 @@ class Asteroids extends Floater
     myDirectionX = Math.random()*5-2;
     myDirectionY = Math.random()*5-2;
     myPointDirection = 0;
-    randomRotationSpeed = (int)(Math.random()*3)+1;
-    randomRotationSpeed2 = (int)(Math.random()*3)-3;
-    randomize = Math.random();
+    if (Math.random() <0.5)
+    {
+      rotationSpeed = (int)(Math.random()*3)+1;
+    }
+    else{
+       rotationSpeed = (int)(Math.random()*3)-3;
+    }
   }
   public void setX(int x) { myCenterX = x;}
   public int getX() {return (int)myCenterX;} 
@@ -153,16 +165,7 @@ class Asteroids extends Floater
   public double getDirectionY(){return (double)myDirectionY;}
   public void setPointDirection(int degrees) { myPointDirection = degrees; }
   public double getPointDirection() { return (double)myPointDirection;}
-  public int getRandomRotationSpeed() 
-  { 
-    if (randomize > 0.5)
-      {
-        return randomRotationSpeed;
-      }
-    else {
-      return randomRotationSpeed2;
-    }
-  }
+  public int getRotationSpeed() {return rotationSpeed;}
 }
 
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
