@@ -35,10 +35,11 @@ public void draw()
     asteroidsList[i].rotate(asteroidsList[i].getRotationSpeed());
     asteroidsList[i].move();
 
-    if (asteroidsList[i].getX() == bob.getX())
+    if ((asteroidsList[i].getX() <= (bob.getX() + 7) && asteroidsList[i].getX() >= (bob.getX()-7)) && (asteroidsList[i].getY()>= (bob.getY()-7) && asteroidsList[i].getY() <= (bob.getY()+7)))
     {
       score += 1;
     }
+
 
     text("score:" + score,20,20);
   }
@@ -55,11 +56,12 @@ public void keyPressed()
   {
     if (keyCode == UP)
     {
-      bob.setDirectionY(-4);
+      //bob.setPointDirection(bob.getDirectionItIsPointing());
+      bob.accelerate(1);
     }
     if (keyCode == DOWN)
     {
-      bob.setDirectionY(4);
+      bob.accelerate(-1);
     }
     if (keyCode == LEFT)
     {
@@ -70,22 +72,40 @@ public void keyPressed()
       bob.rotate(15);
     }
   }
+
+  // if (key==CODED)
+  // {
+  //   if (keyCode == UP)
+  //   {
+  //     bob.setDirectionY(-1);
+  //     bob.setPointDirection(bob.getDirectionItIsPointing());
+      
+  //   }
+  //   if (keyCode == DOWN)
+  //   {
+  //     bob.setDirectionY(1);
+  //     bob.setPointDirection(bob.getDirectionItIsPointing());
+  //   }
+  //   if (keyCode == LEFT)
+  //   {
+  //     bob.setDirectionX(-1);
+  //     bob.setPointDirection(bob.getDirectionItIsPointing());
+  //   }
+  //   if (keyCode == RIGHT)
+  //   {
+  //     bob.setDirectionX(1);
+  //     bob.setPointDirection(bob.getDirectionItIsPointing());
+  //   }
+  // }
+
   if (key == ' ')
   {
-    if (bob.getDirectionX() <= 10)
-    {
-      bob.accelerate(1);
-    }
-    else {
-      
-    }
-    if (bob.getDirectionY() <= 10)
-    {
-      bob.accelerate(1);
-    }
-    else {
-      
-    }
+    
+  }
+  if (key == 's')
+  {
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
   }
 }
 
@@ -127,6 +147,12 @@ class SpaceShip extends Floater
     public double getDirectionY(){return (double)myDirectionY;}
     public void setPointDirection(int degrees) { myPointDirection = degrees; }
     public double getPointDirection() { return (double)myPointDirection;}
+
+    public int getDirectionItIsPointing(){
+      double radiansDirection = Math.atan(myDirectionY/myDirectionX);
+      double degreeDirection = radiansDirection * (180/Math.PI);
+      return (int)degreeDirection;
+    }
 }
 
 class Asteroids extends Floater
@@ -134,9 +160,9 @@ class Asteroids extends Floater
   private int rotationSpeed;
   Asteroids()
   {
-    corners = 3;
-    int [] xS = {16, -8, -8};
-    int [] yS = {0,8,-8};
+    corners = 4;
+    int [] xS = {17,3, -12, -5,14};
+    int [] yS = {0,18,-1,-8,-9};
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners = xS;
