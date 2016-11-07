@@ -1,7 +1,7 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
 Stars [] backgroundStars = new Stars[100];
-Asteroids [] asteroidsList = new Asteroids[10];
+ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 int score = 0;
 
 public void setup() 
@@ -13,9 +13,9 @@ public void setup()
     backgroundStars[i]=new Stars();
   }
 
-  for (int i=0; i<asteroidsList.length; i++)
+  for (int i=0; i<20; i++)
   {
-    asteroidsList[i] = new Asteroids();
+    asteroidsList.add(new Asteroids());
   }
 }
 
@@ -29,19 +29,22 @@ public void draw()
     backgroundStars[i].show();
   }
 
-  for (int i = 0; i<asteroidsList.length; i++)
+  for (int i = 0; i<asteroidsList.size(); i++)
   {
-    asteroidsList[i].show();
-    asteroidsList[i].rotate(asteroidsList[i].getRotationSpeed());
-    asteroidsList[i].move();
+    asteroidsList.get(i).show();
+    asteroidsList.get(i).rotate(asteroidsList.get(i).getRotationSpeed());
+    asteroidsList.get(i).move();
 
-    if ((asteroidsList[i].getX() <= (bob.getX() + 7) && asteroidsList[i].getX() >= (bob.getX()-7)) && (asteroidsList[i].getY()>= (bob.getY()-7) && asteroidsList[i].getY() <= (bob.getY()+7)))
+    // if ((asteroidsList.get(i).getX() <= (bob.getX() + 7) && asteroidsList.get(i).getX() >= (bob.getX()-7)) && (asteroidsList.get(i).getY()>= (bob.getY()-7) && asteroidsList.get(i).getY() <= (bob.getY()+7)))
+    // {
+    //   score += 1;
+    // }
+    if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bob.getX(), bob.getY())<25)
     {
-      score += 1;
+      asteroidsList.remove(i);
     }
 
-
-    text("score:" + score,20,20);
+    text("size:" + asteroidsList.size(),20,20);
   }
 
   bob.show();
