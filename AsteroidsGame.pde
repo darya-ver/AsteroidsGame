@@ -1,6 +1,6 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
-Stars [] backgroundStars = new Stars[100];
+Stars [] backgroundStars = new Stars[150];
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 int score = 0;
 
@@ -35,10 +35,6 @@ public void draw()
     asteroidsList.get(i).rotate(asteroidsList.get(i).getRotationSpeed());
     asteroidsList.get(i).move();
 
-    // if ((asteroidsList.get(i).getX() <= (bob.getX() + 7) && asteroidsList.get(i).getX() >= (bob.getX()-7)) && (asteroidsList.get(i).getY()>= (bob.getY()-7) && asteroidsList.get(i).getY() <= (bob.getY()+7)))
-    // {
-    //   score += 1;
-    // }
     if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bob.getX(), bob.getY())<25)
     {
       asteroidsList.remove(i);
@@ -59,7 +55,6 @@ public void keyPressed()
   {
     if (keyCode == UP)
     {
-      //bob.setPointDirection(bob.getDirectionItIsPointing());
       bob.accelerate(1);
     }
     if (keyCode == DOWN)
@@ -75,31 +70,6 @@ public void keyPressed()
       bob.rotate(15);
     }
   }
-
-  // if (key==CODED)
-  // {
-  //   if (keyCode == UP)
-  //   {
-  //     bob.setDirectionY(-1);
-  //     bob.setPointDirection(bob.getDirectionItIsPointing());
-      
-  //   }
-  //   if (keyCode == DOWN)
-  //   {
-  //     bob.setDirectionY(1);
-  //     bob.setPointDirection(bob.getDirectionItIsPointing());
-  //   }
-  //   if (keyCode == LEFT)
-  //   {
-  //     bob.setDirectionX(-1);
-  //     bob.setPointDirection(bob.getDirectionItIsPointing());
-  //   }
-  //   if (keyCode == RIGHT)
-  //   {
-  //     bob.setDirectionX(1);
-  //     bob.setPointDirection(bob.getDirectionItIsPointing());
-  //   }
-  // }
 
   if (key == ' ')
   {
@@ -171,8 +141,8 @@ class Asteroids extends Floater
     xCorners = xS;
     yCorners = yS;
     myColor = 100;
-    myCenterX = (int)(Math.random()*width);
-    myCenterY = (int)(Math.random()*height);
+    myCenterX = (Math.random()*width);
+    myCenterY = (Math.random()*height);
     myDirectionX = Math.random()*5-2;
     myDirectionY = Math.random()*5-2;
     myPointDirection = 0;
@@ -285,8 +255,8 @@ class Stars
   {
     myX = (int)(Math.random()*width);
     myY = (int)(Math.random()*height);
-    mySize = (int)(Math.random()*7+2);
-    myOpacity = (int)(Math.random()*100);
+    mySize = (int)(Math.random()*8+2);
+    myOpacity = (int)(Math.random()*200);
   }
   public void show()
   {
