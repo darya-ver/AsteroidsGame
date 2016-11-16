@@ -4,8 +4,6 @@ Stars [] backgroundStars = new Stars[150];
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 int score = 0;
 
-Bullet baab = new Bullet(bob);
-
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
 public void setup() 
@@ -33,11 +31,24 @@ public void draw()
     backgroundStars[i].show();
   }
 
+  bob.move();
+  bob.show();
+
+  for(int i = 0; i < bullets.size(); i++)
+  {
+    bullets.get(i).move();
+    bullets.get(i).show();
+    if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
+    {
+      bullets.remove(i);
+    }
+  }
+
   for (int i = 0; i<asteroidsList.size(); i++)
   {
-    asteroidsList.get(i).show();
-    asteroidsList.get(i).rotate(asteroidsList.get(i).getRotationSpeed());
+    asteroidsList.get(i).turn(asteroidsList.get(i).getRotationSpeed());
     asteroidsList.get(i).move();
+    asteroidsList.get(i).show();
 
     if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bob.getX(), bob.getY())<25)
     {
@@ -46,19 +57,6 @@ public void draw()
 
     text("size:" + asteroidsList.size(),20,20);
   }
-
-  bob.show();
-  bob.move();
-
-  for(int i = 0; i < bullets.size()-1; i++)
-  {
-    bullets.get(i).show();
-    bullets.get(i).move();
-  }
-
-  baab.show();
-  baab.move();
-
 }
 
 public void keyPressed()
@@ -76,24 +74,23 @@ public void keyPressed()
     }
     if (keyCode == LEFT)
     {
-      bob.rotate(-15);
+      bob.turn(-15);
     }
     if (keyCode == RIGHT)
     {
-      bob.rotate(15);
+      bob.turn(15);
     }
   }
 
-  if (key == ' ')
-  {
-    bullets.add(new Bullet(bob));
-  }
   
   if (key == 's')
   {
     bob.setDirectionX(0);
     bob.setDirectionY(0);
   }
+
+
+  
 }
 
 public void keyTyped()
@@ -105,6 +102,12 @@ public void keyTyped()
     bob.setDirectionX(0);
     bob.setDirectionY(0);
   }
+
+  if (key == ' ')
+  {
+    bullets.add(new Bullet(bob));
+  }
+
 }
 
 class SpaceShip extends Floater  
@@ -126,7 +129,7 @@ class SpaceShip extends Floater
     myPointDirection = 0;
   }
 
-    public void setX(int x) { myCenterX = x;}
+    public void setX(int x) {myCenterX = x;}
     public int getX() {return (int)myCenterX;} 
     public void setY(int y){myCenterY = y;}
     public int getY(){return (int)myCenterY;}
@@ -212,9 +215,15 @@ class Bullet extends Floater
     noStroke();
     ellipse((float)myCenterX, (float)myCenterY, 10, 10);
   }
+
+  public void move()
+  {
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;        
+  }
 }
 
-abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
+abstract class Floater //Do NOT modify the Floater class! Make changes in the Spaceship class 
 {   
   protected int corners;  //the number of corners, a triangular floater has 3   
   protected int[] xCorners;   
@@ -238,18 +247,16 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   public void accelerate (double dAmount)   
   {          
     //convert the current direction the floater is pointing to radians    
-    double dRadians = myPointDirection*(Math.PI/180);     
+    double dRadians =myPointDirection*(Math.PI/180);     
     //change coordinates of direction of travel    
     myDirectionX += ((dAmount) * Math.cos(dRadians));    
     myDirectionY += ((dAmount) * Math.sin(dRadians));       
-  }  
-
-  public void rotate (int nDegreesOfRotation)   
+  }   
+  public void turn (int nDegreesOfRotation)   
   {     
     //rotates the floater by a given number of degrees    
     myPointDirection+=nDegreesOfRotation;   
   }   
-
   public void move ()   //move the floater in the current direction of travel
   {      
     //change the x and y coordinates by myDirectionX and myDirectionY       
@@ -268,32 +275,42 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     if(myCenterY >height)
     {    
       myCenterY = 0;    
-    }   
+    } 
+    
     else if (myCenterY < 0)
     {     
       myCenterY = height;    
     }   
   }   
-
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
     stroke(myColor);    
-    //convert degrees to radians for sin and cos         
-    double dRadians = myPointDirection*(Math.PI/180);                 
-    int xRotatedTranslated, yRotatedTranslated;    
-    beginShape();         
-    for(int nI = 0; nI < corners; nI++)    
-    {     
-      //rotate and translate the coordinates of the floater using current direction 
-      xRotatedTranslated = (int)((xCorners[nI]* Math.cos(dRadians)) - (yCorners[nI] * Math.sin(dRadians))+myCenterX);     
-      yRotatedTranslated = (int)((xCorners[nI]* Math.sin(dRadians)) + (yCorners[nI] * Math.cos(dRadians))+myCenterY);      
-      vertex(xRotatedTranslated,yRotatedTranslated);    
-    }   
-    endShape(CLOSE);  
-  } 
+    
+    //translate the (x,y) center of the ship to the correct position
+    translate((float)myCenterX, (float)myCenterY);
 
-}
+    //convert degrees to radians for rotate()     
+    float dRadians = (float)(myPointDirection*(Math.PI/180));
+    
+    //rotate so that the polygon will be drawn in the correct direction
+    rotate(dRadians);
+    
+    //draw the polygon
+    beginShape();
+    for (int nI = 0; nI < corners; nI++)
+    {
+      vertex(xCorners[nI], yCorners[nI]);
+    }
+    endShape(CLOSE);
+
+    //"unrotate" and "untranslate" in reverse order
+    rotate(-1*dRadians);
+    translate(-1*(float)myCenterX, -1*(float)myCenterY);
+  }  
+
+
+} 
 
 class Stars
 {
