@@ -50,13 +50,22 @@ public void draw()
     asteroidsList.get(i).move();
     asteroidsList.get(i).show();
 
-    if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bob.getX(), bob.getY())<25)
-    {
-      asteroidsList.remove(i);
-    }
-
     text("size:" + asteroidsList.size(),20,20);
   }
+
+  for (int i = 0; i<asteroidsList.size(); i++)
+  {
+    for (int j = 0; i<bullets.size(); j++)
+    {
+      if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY())<20)
+      {
+        asteroidsList.remove(i);
+        bullets.remove(j);
+        break;
+      }
+    }
+  }
+    
 }
 
 public void keyPressed()
