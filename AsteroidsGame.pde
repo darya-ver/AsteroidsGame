@@ -2,7 +2,11 @@
 SpaceShip bob = new SpaceShip();
 Stars [] backgroundStars = new Stars[150];
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
+ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
+ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
+
 int score = 0;
+int numberOfAsteroids = 3;
 
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
@@ -15,7 +19,7 @@ public void setup()
     backgroundStars[i]=new Stars();
   }
 
-  for (int i=0; i<20; i++)
+  for (int i=0; i<numberOfAsteroids; i++)
   {
     asteroidsList.add(new Asteroids());
   }
@@ -25,6 +29,9 @@ public void setup()
 public void draw() 
 {
   //your code here
+
+  fill(0,0,0,50);
+  rect(0,0,width,height);
   background(0);
   for (int i = 0; i<backgroundStars.length; i++)
   {
@@ -53,13 +60,46 @@ public void draw()
     text("size:" + asteroidsList.size(),20,20);
   }
 
+  for(SmallAsteroids smallAst : smallAsteroidsList)
+  {
+    smallAst.move();
+    smallAst.show();
+  }
+
+  for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
+  {
+    evenSmallAst.move();
+    evenSmallAst.show();
+  }
+
   for (int i = 0; i<asteroidsList.size(); i++)
   {
-    for (int j = 0; i<bullets.size(); j++)
+    for (int j = 0; j<bullets.size(); j++)
     {
-      if (dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY())<20)
+      float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+      if (distance1<20)
       {
+        
+        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
         asteroidsList.remove(i);
+        bullets.remove(j);
+        break;
+      }
+    }
+  }
+
+  for (int i = 0; i<smallAsteroidsList.size(); i++)
+  {
+    for (int j = 0; j<bullets.size(); j++)
+    {
+      float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+      if (distance2<10)
+      {
+        
+        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+        evenSmallerAsteroidsList.remove(i);
         bullets.remove(j);
         break;
       }
@@ -69,8 +109,7 @@ public void draw()
 }
 
 public void keyPressed()
-{
-             
+{         
   if (key==CODED)
   {
     if (keyCode == UP)
@@ -90,16 +129,12 @@ public void keyPressed()
       bob.turn(15);
     }
   }
-
   
   if (key == 's')
   {
     bob.setDirectionX(0);
     bob.setDirectionY(0);
   }
-
-
-  
 }
 
 public void keyTyped()
@@ -158,12 +193,12 @@ class SpaceShip extends Floater
 
 class Asteroids extends Floater
 {
-  private int rotationSpeed;
+  protected int rotationSpeed;
   Asteroids()
   {
     corners = 4;
-    int [] xS = {17,3, -12, -5,14};
-    int [] yS = {0,18,-1,-8,-9};
+    int [] xS = {34,6, -24, -10,28};
+    int [] yS = {0,36,-2,-16,-18};
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners = xS;
@@ -193,6 +228,60 @@ class Asteroids extends Floater
   public void setPointDirection(int degrees) { myPointDirection = degrees; }
   public double getPointDirection() { return (double)myPointDirection;}
   public int getRotationSpeed() {return rotationSpeed;}
+}
+
+class SmallAsteroids extends Asteroids
+{
+  SmallAsteroids(Asteroids dadAsteroid)
+  {
+    corners = 4;
+    int [] xS = {17,3, -12, -5,14};
+    int [] yS = {0,18,-1,-8,-9};
+    xCorners = new int[corners];
+    yCorners = new int[corners];
+    xCorners = xS;
+    yCorners = yS;
+    myColor = 100;
+    myCenterX = dadAsteroid.getX();
+    myCenterY = dadAsteroid.getY();
+    myDirectionX = Math.random()*5-2;
+    myDirectionY = Math.random()*5-2;
+    myPointDirection = 0;
+    if (Math.random() < 0.5)
+    {
+      rotationSpeed = (int)(Math.random()*3)+1;
+    }
+    else{
+       rotationSpeed = (int)(Math.random()*3)-3;
+    }
+  }
+}
+
+class EvenSmallerAsteroids extends Asteroids
+{
+  EvenSmallerAsteroids(SmallAsteroids dadAsteroid)
+  {
+    corners = 4;
+    int [] xS = {8,1, -6, -2,7};
+    int [] yS = {0,9,-1,-4,-4};
+    xCorners = new int[corners];
+    yCorners = new int[corners];
+    xCorners = xS;
+    yCorners = yS;
+    myColor = 100;
+    myCenterX = dadAsteroid.getX();
+    myCenterY = dadAsteroid.getY();
+    myDirectionX = Math.random()*5-2;
+    myDirectionY = Math.random()*5-2;
+    myPointDirection = 0;
+    if (Math.random() < 0.5)
+    {
+      rotationSpeed = (int)(Math.random()*3)+1;
+    }
+    else{
+       rotationSpeed = (int)(Math.random()*3)-3;
+    }
+  }
 }
 
 class Bullet extends Floater
