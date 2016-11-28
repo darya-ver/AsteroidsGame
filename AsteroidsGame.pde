@@ -6,7 +6,7 @@ ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 
 int score = 0;
-int numberOfAsteroids = 3;
+int numberOfAsteroids = 10;
 
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
@@ -99,7 +99,7 @@ public void draw()
         
         evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
         evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-        evenSmallerAsteroidsList.remove(i);
+        smallAsteroidsList.remove(i);
         bullets.remove(j);
         break;
       }
@@ -406,7 +406,6 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     rotate(-1*dRadians);
     translate(-1*(float)myCenterX, -1*(float)myCenterY);
   }  
-
 
 } 
 
