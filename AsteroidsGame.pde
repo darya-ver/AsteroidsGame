@@ -5,8 +5,10 @@ ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 
-int score = 0;
+int healthLength = 30;
 int numberOfAsteroids = 10;
+boolean gameRunning = true;
+int score = 0;
 
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
@@ -28,82 +30,167 @@ public void setup()
 
 public void draw() 
 {
-  //your code here
-
-  fill(0,0,0,50);
-  rect(0,0,width,height);
   background(0);
-  for (int i = 0; i<backgroundStars.length; i++)
-  {
-    backgroundStars[i].show();
-  }
 
-  bob.move();
-  bob.show();
-
-  for(int i = 0; i < bullets.size(); i++)
+  if (gameRunning == true)
   {
-    bullets.get(i).move();
-    bullets.get(i).show();
-    if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
+    fill(255,0,0);
+    textSize(20);
+    text("Score: " + score, 450, 550);
+    score ++;
+    
+    //shows stars
+    for (Stars star : backgroundStars)
+      star.show();
+
+    bob.move();
+    bob.show();
+
+    //moves and shows bullets
+    for(int i = 0; i < bullets.size(); i++)
     {
-      bullets.remove(i);
-    }
-  }
-
-  for (int i = 0; i<asteroidsList.size(); i++)
-  {
-    asteroidsList.get(i).turn(asteroidsList.get(i).getRotationSpeed());
-    asteroidsList.get(i).move();
-    asteroidsList.get(i).show();
-
-    text("size:" + asteroidsList.size(),20,20);
-  }
-
-  for(SmallAsteroids smallAst : smallAsteroidsList)
-  {
-    smallAst.move();
-    smallAst.show();
-  }
-
-  for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
-  {
-    evenSmallAst.move();
-    evenSmallAst.show();
-  }
-
-  for (int i = 0; i<asteroidsList.size(); i++)
-  {
-    for (int j = 0; j<bullets.size(); j++)
-    {
-      float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-      if (distance1<20)
+      bullets.get(i).move();
+      bullets.get(i).show();
+      
+      //removes bullets from the screen when they leave it
+      if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
       {
-        
-        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-        asteroidsList.remove(i);
-        bullets.remove(j);
-        break;
+        bullets.remove(i);
       }
     }
-  }
 
-  for (int i = 0; i<smallAsteroidsList.size(); i++)
-  {
-    for (int j = 0; j<bullets.size(); j++)
+    //moves and shows asteroids
+    for (Asteroids ast : asteroidsList)
     {
-      float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-      if (distance2<10)
+      ast.turn(ast.getRotationSpeed());
+      ast.move();
+      ast.show();
+      float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip < 23)
       {
-        
-        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-        smallAsteroidsList.remove(i);
-        bullets.remove(j);
-        break;
+        healthLength -= 3;
       }
     }
+
+    //moves and shows smallerAsteroids
+    for(SmallAsteroids smallAst : smallAsteroidsList)
+    {
+      smallAst.turn(smallAst.getRotationSpeed());
+      smallAst.move();
+      smallAst.show();
+
+      float distantAstShip1 = dist(smallAst.getX(), smallAst.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip1 < 16)
+      {
+        healthLength -= 3;
+      }
+    }
+
+    //moves and shows evenSmallerAsteroids
+    for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
+    {
+      evenSmallAst.turn(evenSmallAst.getRotationSpeed());
+      evenSmallAst.move();
+      evenSmallAst.show();
+
+      float distantAstShip2 = dist(evenSmallAst.getX(), evenSmallAst.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip2 < 7)
+      {
+        healthLength -= 3;
+      }
+    }
+
+     //creates new smaller asteroid when bullet hits asteroid
+    for (int i = 0; i<asteroidsList.size(); i++)
+    {
+      for (int j = 0; j<bullets.size(); j++)
+      {
+        float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        if (distance1<20)
+        {
+          
+          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+          asteroidsList.remove(i);
+          bullets.remove(j);
+          break;
+        }
+      }
+    }
+
+    //creates new evensmaller asteroid when bullet hits smaller asteroid
+    for (int i = 0; i<smallAsteroidsList.size(); i++)
+    {
+      for (int j = 0; j<bullets.size(); j++)
+      {
+        float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        if (distance2<10)
+        {
+          
+          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+          smallAsteroidsList.remove(i);
+          bullets.remove(j);
+          break;
+        }
+      }
+    }
+
+    //deletes smallest asteroids when bullet hits them
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+    {
+      for(int j = 0; j<bullets.size(); j++)
+      {
+        float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        
+        if (distance3 < 8)
+        {
+          evenSmallerAsteroidsList.remove(i);
+          break;
+        } 
+      }
+      
+    }
+
+    //health bar
+    noStroke();
+    fill(0,100,0);
+    rect(0, 0, 200, 50);
+    fill(0,255,0);
+    rect(0, 0, 2*healthLength, 50);
+  }
+
+
+  //end game
+  if (healthLength <= 0)
+  {
+    gameRunning = false;
+    // bob.setDirectionX(0);
+    // bob.setDirectionY(0);
+
+    // for(Asteroids ast : asteroidsList)
+    // {
+    //   ast.setDirectionX(0);
+    //   ast.setDirectionY(0);
+    //   ast.setRotationSpeed(0);
+    // }
+
+    // for(Asteroids smallAst : smallAsteroidsList)
+    // {
+    //   smallAst.setDirectionX(0);
+    //   smallAst.setDirectionY(0);
+    //   smallAst.setRotationSpeed(0);
+    // }
+
+    // for(Asteroids evenSmallAst : evenSmallerAsteroidsList)
+    // {
+    //   evenSmallAst.setDirectionX(0);
+    //   evenSmallAst.setDirectionY(0);
+    //   evenSmallAst.setRotationSpeed(0);
+    // }
   }
     
 }
@@ -228,6 +315,7 @@ class Asteroids extends Floater
   public void setPointDirection(int degrees) { myPointDirection = degrees; }
   public double getPointDirection() { return (double)myPointDirection;}
   public int getRotationSpeed() {return rotationSpeed;}
+  public void setRotationSpeed(int speed) {rotationSpeed = speed;}
 }
 
 class SmallAsteroids extends Asteroids
