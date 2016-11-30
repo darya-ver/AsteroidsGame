@@ -5,7 +5,7 @@ ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 
-int healthLength = 30;
+int healthLength = 11;
 int numberOfAsteroids = 10;
 boolean gameRunning = true;
 int score = 0;
@@ -36,7 +36,7 @@ public void draw()
   {
     fill(255,0,0);
     textSize(20);
-    text("Score: " + score, 450, 550);
+    text("Score: " + score, 450, 35);
     score ++;
     
     //shows stars
@@ -69,7 +69,7 @@ public void draw()
       
       if (distantAstShip < 23)
       {
-        healthLength -= 3;
+        healthLength -= 2;
       }
     }
 
@@ -84,7 +84,7 @@ public void draw()
       
       if (distantAstShip1 < 16)
       {
-        healthLength -= 3;
+        healthLength -= 2;
       }
     }
 
@@ -158,9 +158,9 @@ public void draw()
     //health bar
     noStroke();
     fill(0,100,0);
-    rect(0, 0, 200, 50);
+    rect(0, 0, 300, 25);
     fill(0,255,0);
-    rect(0, 0, 2*healthLength, 50);
+    rect(0, 0, 2*healthLength, 25);
   }
 
 
@@ -168,31 +168,14 @@ public void draw()
   if (healthLength <= 0)
   {
     gameRunning = false;
-    // bob.setDirectionX(0);
-    // bob.setDirectionY(0);
-
-    // for(Asteroids ast : asteroidsList)
-    // {
-    //   ast.setDirectionX(0);
-    //   ast.setDirectionY(0);
-    //   ast.setRotationSpeed(0);
-    // }
-
-    // for(Asteroids smallAst : smallAsteroidsList)
-    // {
-    //   smallAst.setDirectionX(0);
-    //   smallAst.setDirectionY(0);
-    //   smallAst.setRotationSpeed(0);
-    // }
-
-    // for(Asteroids evenSmallAst : evenSmallerAsteroidsList)
-    // {
-    //   evenSmallAst.setDirectionX(0);
-    //   evenSmallAst.setDirectionY(0);
-    //   evenSmallAst.setRotationSpeed(0);
-    // }
   }
-    
+  
+  if (gameRunning == false)
+  {
+    textSize(30);
+    fill(255,0,0);
+    text("GAME OVER", 215, 300);
+  }
 }
 
 public void keyPressed()
@@ -503,7 +486,7 @@ class Stars
   Stars ()
   {
     myX = (int)(Math.random()*width);
-    myY = (int)(Math.random()*height);
+    myY = (int)(Math.random()*(height))+35;
     mySize = (int)(Math.random()*8+2);
     myOpacity = (int)(Math.random()*200);
   }
