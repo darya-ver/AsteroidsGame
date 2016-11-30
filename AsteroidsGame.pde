@@ -5,10 +5,12 @@ ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 
-int healthLength = 11;
+int healthLength = 150;
 int numberOfAsteroids = 10;
-boolean gameRunning = true;
+boolean gameRunning = false;
 int score = 0;
+
+boolean mouseIsPressed = false;
 
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
@@ -27,7 +29,6 @@ public void setup()
   }
 }
 
-
 public void draw() 
 {
   background(0);
@@ -41,7 +42,10 @@ public void draw()
     
     //shows stars
     for (Stars star : backgroundStars)
+    {
       star.show();
+      star.move(bob);
+    }
 
     bob.move();
     bob.show();
@@ -163,7 +167,6 @@ public void draw()
     rect(0, 0, 2*healthLength, 25);
   }
 
-
   //end game
   if (healthLength <= 0)
   {
@@ -175,6 +178,14 @@ public void draw()
     textSize(30);
     fill(255,0,0);
     text("GAME OVER", 215, 300);
+    rect(200,   400,  200,  70);
+    fill(255);
+    text("Restart", 245,445);
+
+    if(checkIfGameStarted()==true)
+    {
+      gameRunning = true;
+    }
   }
 }
 
@@ -207,6 +218,9 @@ public void keyPressed()
   }
 }
 
+public void mousePressed() {
+  mouseIsPressed = true;
+}
 public void keyTyped()
 {
   if (key == 'r')
@@ -221,7 +235,6 @@ public void keyTyped()
   {
     bullets.add(new Bullet(bob));
   }
-
 }
 
 class SpaceShip extends Floater  
@@ -477,24 +490,60 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     rotate(-1*dRadians);
     translate(-1*(float)myCenterX, -1*(float)myCenterY);
   }  
-
 } 
 
-class Stars
+class Stars 
 {
-  private int myX, myY, mySize, myOpacity;
+  private int mySize, myOpacity;
+  private float myX, myY;
   Stars ()
   {
-    myX = (int)(Math.random()*width);
-    myY = (int)(Math.random()*(height))+35;
+    myX = (float)(Math.random()*width);
+    myY = (float)(Math.random()*(height))+35;
     mySize = (int)(Math.random()*8+2);
     myOpacity = (int)(Math.random()*200);
   }
+
   public void show()
   {
     noStroke();
     fill(255,255,153, myOpacity);
     ellipse(myX, myY, mySize, mySize);
   }
+
+  public void move(SpaceShip ship)
+  {
+    myX -= ship.getDirectionX()/2.0;
+    myY -= ship.getDirectionY()/2.0;
+
+    if(myX >width)
+    {     
+      myX = 0;    
+    }    
+    else if (myX<0)
+    {     
+      myX = width;    
+    }    
+    if(myY >height)
+    {    
+      myY = 0;    
+    } 
+    
+    else if (myY < 0)
+    {     
+      myY = height;    
+    }   
+  }
 } 
 
+public boolean checkIfGameStarted()
+{
+  if (mouseIsPressed == true)
+  {
+    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+      return true;
+    else
+      return false;
+  }
+  return false;
+}
