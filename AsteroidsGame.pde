@@ -4,10 +4,12 @@ Stars [] backgroundStars = new Stars[150];
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
+ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
 
 int healthLength = 150;
 int numberOfAsteroids = 10;
-boolean gameRunning = false;
+boolean gameRunning = true ;
+boolean beginGame = false;
 int score = 0;
 
 boolean mouseIsPressed = false;
@@ -32,6 +34,13 @@ public void setup()
 public void draw() 
 {
   background(0);
+
+  if(beginGame == true)
+  {
+    textSize(30);
+    fill(255);
+    text("Asteroids Game", 50, 50);
+  }
 
   if (gameRunning == true)
   {
@@ -107,6 +116,13 @@ public void draw()
       }
     }
 
+    //moves and shows flying bits
+    for(FlyingBits bits : flyingBitsList)
+    {
+      bits.move();
+      bits.show();
+    }
+
      //creates new smaller asteroid when bullet hits asteroid
     for (int i = 0; i<asteroidsList.size(); i++)
     {
@@ -116,8 +132,21 @@ public void draw()
         if (distance1<20)
         {
           
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+
           smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
           smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+
+          // for(int k = 0; k<4; i++)
+          // {
+          //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          // }
+
           asteroidsList.remove(i);
           bullets.remove(j);
           break;
@@ -133,7 +162,13 @@ public void draw()
         float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
         if (distance2<10)
         {
-          
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+
           evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
           evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
           smallAsteroidsList.remove(i);
@@ -173,7 +208,7 @@ public void draw()
     gameRunning = false;
   }
   
-  if (gameRunning == false)
+  if (gameRunning == false && beginGame == false)
   {
     textSize(30);
     fill(255,0,0);
@@ -182,7 +217,7 @@ public void draw()
     fill(255);
     text("Restart", 245,445);
 
-    if(checkIfGameStarted()==true)
+    if(checkReplayGame()==true)
     {
       gameRunning = true;
     }
@@ -221,6 +256,7 @@ public void keyPressed()
 public void mousePressed() {
   mouseIsPressed = true;
 }
+
 public void keyTyped()
 {
   if (key == 'r')
@@ -365,6 +401,39 @@ class EvenSmallerAsteroids extends Asteroids
     else{
        rotationSpeed = (int)(Math.random()*3)-3;
     }
+  }
+}
+
+class FlyingBits extends Asteroids
+{
+  FlyingBits(Asteroids asteroid)
+  {
+    corners = 6;
+    int [] xS = {0,3, 3, 0,-3, -3};
+    int [] yS = {6,3,-3,-6,-6,3};
+    xCorners = new int[corners];
+    yCorners = new int[corners];
+    xCorners = xS;
+    yCorners = yS;
+    myColor = 100;
+    myCenterX = asteroid.getX();
+    myCenterY = asteroid.getY();
+    myDirectionX = (Math.random()*5-2)*3;
+    myDirectionY = (Math.random()*5-2)*3;
+    myPointDirection = 0;
+    if (Math.random() < 0.5)
+    {
+      rotationSpeed = (int)(Math.random()*3)+1;
+    }
+    else{
+       rotationSpeed = (int)(Math.random()*3)-3;
+    }
+  }
+
+  public void move()
+  {
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;        
   }
 }
 
@@ -536,14 +605,20 @@ class Stars
   }
 } 
 
-public boolean checkIfGameStarted()
+public boolean checkReplayGame()
 {
-  if (mouseIsPressed == true)
+  if (mouseIsPressed == true && beginGame == false)
   {
     if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+    {
+      mouseIsPressed = false;
       return true;
+    }
     else
+    {
+      mouseIsPressed = false;
       return false;
+    }
   }
   return false;
 }
