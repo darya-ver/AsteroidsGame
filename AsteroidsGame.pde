@@ -1,20 +1,21 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
 Stars [] backgroundStars = new Stars[150];
+
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
-
-int healthLength = 150;
-int numberOfAsteroids = 10;
-boolean gameRunning = true ;
-boolean beginGame = false;
-int score = 0;
-
-boolean mouseIsPressed = false;
-
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+
+int healthLength = 10;
+int numberOfAsteroids = 10;
+int score = 0;
+int maxScore = 0;
+
+boolean gameRunning = true;
+boolean beginGame = false;
+boolean endGame = false;
 
 public void setup() 
 {
@@ -34,7 +35,7 @@ public void setup()
 public void draw() 
 {
   background(0);
-
+  System.out.println(gameRunning);
   if(beginGame == true)
   {
     textSize(30);
@@ -204,23 +205,46 @@ public void draw()
 
   //end game
   if (healthLength <= 0)
-  {
+  {    
     gameRunning = false;
+    endGame = true;
   }
   
-  if (gameRunning == false && beginGame == false)
+  if (endGame == true)
   {
+    if(score > maxScore)
+      maxScore = score;
+
     textSize(30);
+    fill(0,0,255);
+    text("Max Score: " + maxScore, 215, 200);
     fill(255,0,0);
     text("GAME OVER", 215, 300);
     rect(200,   400,  200,  70);
     fill(255);
     text("Restart", 245,445);
 
-    if(checkReplayGame()==true)
-    {
-      gameRunning = true;
-    }
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
+
+    for (int i=0; i<numberOfAsteroids; i++)
+      asteroidsList.add(new Asteroids());
+
+    bob.restartVariables();
+
+    score = 0;
   }
 }
 
@@ -253,8 +277,13 @@ public void keyPressed()
   }
 }
 
-public void mousePressed() {
-  mouseIsPressed = true;
+public void mouseClicked() {
+  if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+  {
+    endGame = false;
+    gameRunning = true;
+    healthLength = 15;
+  }
 }
 
 public void keyTyped()
@@ -308,6 +337,15 @@ class SpaceShip extends Floater
       double degreeDirection = radiansDirection * (180/Math.PI);
       return (int)degreeDirection;
     }
+
+    public void restartVariables() 
+    {
+      myCenterX = 300;
+      myCenterY = 300;
+      myDirectionX = 0;
+      myDirectionY = 0;
+      myPointDirection = 0;
+    }
 }
 
 class Asteroids extends Floater
@@ -348,6 +386,22 @@ class Asteroids extends Floater
   public double getPointDirection() { return (double)myPointDirection;}
   public int getRotationSpeed() {return rotationSpeed;}
   public void setRotationSpeed(int speed) {rotationSpeed = speed;}
+
+  public void restartVariables()
+  {
+    myCenterX = (Math.random()*width);
+    myCenterY = (Math.random()*height);
+    myDirectionX = Math.random()*5-2;
+    myDirectionY = Math.random()*5-2;
+    myPointDirection = 0;
+    if (Math.random() < 0.5)
+    {
+      rotationSpeed = (int)(Math.random()*3)+1;
+    }
+    else{
+       rotationSpeed = (int)(Math.random()*3)-3;
+    }
+  }
 }
 
 class SmallAsteroids extends Asteroids
@@ -605,20 +659,3 @@ class Stars
   }
 } 
 
-public boolean checkReplayGame()
-{
-  if (mouseIsPressed == true && beginGame == false)
-  {
-    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
-    {
-      mouseIsPressed = false;
-      return true;
-    }
-    else
-    {
-      mouseIsPressed = false;
-      return false;
-    }
-  }
-  return false;
-}
