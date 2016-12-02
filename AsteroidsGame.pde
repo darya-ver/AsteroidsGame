@@ -8,7 +8,7 @@ ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSma
 ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
-int healthLength = 10;
+int healthLength = 150;
 int numberOfAsteroids = 10;
 int score = 0;
 int maxScore = 0;
@@ -281,7 +281,7 @@ public void mouseClicked() {
   {
     endGame = false;
     gameRunning = true;
-    healthLength = 15;
+    healthLength = 150;
   }
 }
 
