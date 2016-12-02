@@ -35,7 +35,6 @@ public void setup()
 public void draw() 
 {
   background(0);
-  System.out.println(gameRunning);
   if(beginGame == true)
   {
     textSize(30);
