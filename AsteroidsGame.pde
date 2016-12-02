@@ -17,6 +17,12 @@ boolean gameRunning = true;
 boolean beginGame = false;
 boolean endGame = false;
 
+boolean leftKeyPressed = false;
+boolean rightKeyPressed = false;
+boolean upKeyPressed = false;
+boolean downKeyPressed = false;
+boolean spaceKeyPressed = false;
+
 public void setup() 
 {
   size(600, 600);
@@ -55,6 +61,67 @@ public void draw()
       star.show();
       star.move(bob);
     }
+
+    if(upKeyPressed == true)
+      bob.accelerate(0.1);
+    if(downKeyPressed == true)
+      bob.accelerate(-0.1);
+    if(leftKeyPressed == true)
+      bob.turn(-5);
+    if(rightKeyPressed == true)
+      bob.turn(5);
+
+    if(leftKeyPressed == true && upKeyPressed == true)
+    {
+      bob.turn(-5);
+      bob.accelerate(0.1);
+    }
+
+    if(rightKeyPressed == true && upKeyPressed == true)
+    {
+      bob.turn(5);
+      bob.accelerate(0.1);
+    }
+
+    if(rightKeyPressed == true && downKeyPressed == true)
+    {
+      bob.turn(5);
+      bob.accelerate(-0.1);
+    }
+
+    if(leftKeyPressed == true && downKeyPressed == true)
+    {
+      bob.turn(-5);
+      bob.accelerate(-0.1);
+    }
+
+    if(spaceKeyPressed == true && (frameCount % 3) == 0)
+      bullets.add(new Bullet(bob));
+
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    {
+      bob.turn(-5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    {
+      bob.turn(5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    {
+      bob.turn(5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    {
+      bob.turn(-5);
+      bullets.add(new Bullet(bob));
+    }
+
 
     bob.move();
     bob.show();
@@ -249,28 +316,71 @@ public void draw()
 
 public void keyPressed()
 {         
+
   if (key==CODED)
   {
     if (keyCode == UP)
     {
-      bob.accelerate(1);
+      upKeyPressed = true;
     }
     if (keyCode == DOWN)
     {
-      bob.accelerate(-1);
+      downKeyPressed = true;
     }
     if (keyCode == LEFT)
     {
-      bob.turn(-15);
+      leftKeyPressed = true;
     }
     if (keyCode == RIGHT)
     {
-      bob.turn(15);
+      rightKeyPressed = true;
     }
+  }
+
+  if (key == ' ')
+  {
+    spaceKeyPressed = true;
   }
   
   if (key == 's')
   {
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
+  }
+}
+
+public void keyReleased()
+{
+  if (key==CODED)
+  {
+    if (keyCode == UP)
+    {
+      upKeyPressed = false;
+    }
+    if (keyCode == DOWN)
+    {
+      downKeyPressed = false;
+    }
+    if (keyCode == LEFT)
+    {
+      leftKeyPressed = false;
+    }
+    if (keyCode == RIGHT)
+    {
+      rightKeyPressed = false;
+    }
+  }
+
+  if (key == ' ')
+    spaceKeyPressed = false;
+}
+
+public void keyTyped()
+{
+  if (key == 'r')
+  {
+    bob.setX((int)(Math.random()*width));
+    bob.setY((int)(Math.random()*height));
     bob.setDirectionX(0);
     bob.setDirectionY(0);
   }
@@ -285,21 +395,7 @@ public void mouseClicked() {
   }
 }
 
-public void keyTyped()
-{
-  if (key == 'r')
-  {
-    bob.setX((int)(Math.random()*width));
-    bob.setY((int)(Math.random()*height));
-    bob.setDirectionX(0);
-    bob.setDirectionY(0);
-  }
 
-  if (key == ' ')
-  {
-    bullets.add(new Bullet(bob));
-  }
-}
 
 class SpaceShip extends Floater  
 {   
