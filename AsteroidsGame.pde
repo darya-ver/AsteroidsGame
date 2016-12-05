@@ -9,12 +9,12 @@ ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
 int healthLength = 150;
-int numberOfAsteroids = 10;
+int numberOfAsteroids = 5;
 int score = 0;
 int maxScore = 0;
 
-boolean gameRunning = true;
-boolean beginGame = false;
+boolean gameRunning = false;
+boolean beginGame = true;
 boolean endGame = false;
 
 boolean leftKeyPressed = false;
@@ -43,9 +43,20 @@ public void draw()
   background(0);
   if(beginGame == true)
   {
-    textSize(30);
+    //Title text
+    textSize(60);
     fill(255);
-    text("Asteroids Game", 50, 50);
+    text("Asteroids Game", 70, 150);
+
+    //Play Button
+    fill(0,100,0);
+    rect(150,260,300,100,10);
+
+    //Play Words
+    fill(0,200,0);
+    textSize(50);
+    text("Play", 250,326);
+
   }
 
   if (gameRunning == true)
@@ -149,7 +160,7 @@ public void draw()
       
       if (distantAstShip < 23)
       {
-        healthLength -= 2;
+        healthLength -= 5;
       }
     }
 
@@ -164,7 +175,7 @@ public void draw()
       
       if (distantAstShip1 < 16)
       {
-        healthLength -= 2;
+        healthLength -= 5;
       }
     }
 
@@ -179,7 +190,7 @@ public void draw()
       
       if (distantAstShip2 < 7)
       {
-        healthLength -= 3;
+        healthLength -= 8;
       }
     }
 
@@ -190,7 +201,7 @@ public void draw()
       bits.show();
     }
 
-     //creates new smaller asteroid when bullet hits asteroid
+    //creates new smaller asteroid when bullet hits asteroid
     for (int i = 0; i<asteroidsList.size(); i++)
     {
       for (int j = 0; j<bullets.size(); j++)
@@ -286,7 +297,7 @@ public void draw()
     text("Max Score: " + maxScore, 215, 200);
     fill(255,0,0);
     text("GAME OVER", 215, 300);
-    rect(200,   400,  200,  70);
+    rect(200,   400,  200,  70, 10);
     fill(255);
     text("Restart", 245,445);
 
@@ -310,7 +321,31 @@ public void draw()
 
     bob.restartVariables();
 
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
     score = 0;
+  }
+}
+
+public void mouseClicked() {
+  if(endGame == true)
+  {
+    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+    {
+      endGame = false;
+      gameRunning = true;
+      healthLength = 150;
+    }
+  }
+
+  else if(beginGame == true)
+  {
+    if(mouseY < 360 && mouseY > 260 && mouseX < 450 && mouseX > 150)
+    {
+      gameRunning = true;
+      beginGame = false;
+    }
   }
 }
 
@@ -385,17 +420,6 @@ public void keyTyped()
     bob.setDirectionY(0);
   }
 }
-
-public void mouseClicked() {
-  if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
-  {
-    endGame = false;
-    gameRunning = true;
-    healthLength = 150;
-  }
-}
-
-
 
 class SpaceShip extends Floater  
 {   
@@ -751,6 +775,14 @@ class Stars
     {     
       myY = height;    
     }   
+  }
+
+  public void restartVariables()
+  {
+    myX = (float)(Math.random()*width);
+    myY = (float)(Math.random()*(height))+35;
+    mySize = (int)(Math.random()*8+2);
+    myOpacity = (int)(Math.random()*200);
   }
 } 
 
