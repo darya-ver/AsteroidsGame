@@ -14,10 +14,11 @@ int numberOfAsteroids = 5;
 int score = 0;
 int maxScore = 0;
 
-boolean gameRunning = false;
+boolean level1 = false;
 boolean beginGame = true;
 boolean endGame = false;
 boolean wonGame = false;
+boolean level2 = false;
 
 boolean leftKeyPressed = false;
 boolean rightKeyPressed = false;
@@ -47,9 +48,143 @@ public void draw()
   // textSize(10);
   // text("Number of Asteroids: " + asteroidsList.size(), 450,50);
 
+  if(beginGame == true){ beginGame();}
+
+  if (level1 == true)
+  {
+    level1();
+  }
+
+  if (healthLength <= 0)
+  {    
+    level1 = false;
+    endGame = true;
+  }
+  
+  if (endGame == true)
+  {
+    endGame();
+  }
+
+  if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && level1 == true)
+  {
+    level1 = false;
+    level2 = true;
+  }
+
+  if(wonGame == true)
+  {
+    wonGame();
+  }
+
+  if(level2 == true)
+  {
+    level2();
+  }
+}
+
+public void mouseClicked() 
+{
+  if(endGame == true || wonGame == true)
+  {
+    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+    {
+      endGame = false;
+      wonGame = false;
+      level1 = true;
+      healthLength = 150;
+      for (int i=0; i<numberOfAsteroids; i++)
+        asteroidsList.add(new Asteroids());
+    }
+  }
+
   if(beginGame == true)
   {
-    //Title text
+    if(mouseY < 360 && mouseY > 260 && mouseX < 450 && mouseX > 150)
+    {
+      level1 = true;
+      beginGame = false;
+      for (int i=0; i<numberOfAsteroids; i++)
+        asteroidsList.add(new Asteroids());
+    }
+  }
+}
+
+public void keyPressed()
+{         
+
+  if (key==CODED)
+  {
+    if (keyCode == UP)
+    {
+      upKeyPressed = true;
+    }
+    if (keyCode == DOWN)
+    {
+      downKeyPressed = true;
+    }
+    if (keyCode == LEFT)
+    {
+      leftKeyPressed = true;
+    }
+    if (keyCode == RIGHT)
+    {
+      rightKeyPressed = true;
+    }
+  }
+
+  if (key == ' ')
+  {
+    spaceKeyPressed = true;
+  }
+  
+  if (key == 's')
+  {
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
+  }
+}
+
+public void keyReleased()
+{
+  if (key==CODED)
+  {
+    if (keyCode == UP)
+    {
+      upKeyPressed = false;
+    }
+    if (keyCode == DOWN)
+    {
+      downKeyPressed = false;
+    }
+    if (keyCode == LEFT)
+    {
+      leftKeyPressed = false;
+    }
+    if (keyCode == RIGHT)
+    {
+      rightKeyPressed = false;
+    }
+  }
+
+  if (key == ' ')
+    spaceKeyPressed = false;
+}
+
+public void keyTyped()
+{
+  if (key == 'r')
+  {
+    bob.setX((int)(Math.random()*width));
+    bob.setY((int)(Math.random()*height));
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
+  }
+}
+
+public void beginGame()
+{
+  //Title text
     textSize(60);
     fill(255);
     text("Asteroids Game", 70, 150);
@@ -62,12 +197,300 @@ public void draw()
     fill(0,200,0);
     textSize(50);
     text("Play", 250,326);
+}
 
-  }
+public void level1()
+{
+  fill(255,0,0);
+    textSize(20);
+    text("Score: " + score, 450, 35);
+    score ++;
+    
+    //shows stars
+    for (Stars star : backgroundStars)
+    {
+      star.show();
+      star.move(bob);
+    }
 
-  if (gameRunning == true)
-  {
+    bob.move();
+    bob.show();
+
+    if(upKeyPressed == true)
+      bob.accelerate(0.1);
+    if(downKeyPressed == true)
+      bob.accelerate(-0.1);
+    if(leftKeyPressed == true)
+      bob.turn(-5);
+    if(rightKeyPressed == true)
+      bob.turn(5);
+
+    if(leftKeyPressed == true && upKeyPressed == true)
+    {
+      bob.turn(-5);
+      bob.accelerate(0.1);
+    }
+
+    if(rightKeyPressed == true && upKeyPressed == true)
+    {
+      bob.turn(5);
+      bob.accelerate(0.1);
+    }
+
+    if(rightKeyPressed == true && downKeyPressed == true)
+    {
+      bob.turn(5);
+      bob.accelerate(-0.1);
+    }
+
+    if(leftKeyPressed == true && downKeyPressed == true)
+    {
+      bob.turn(-5);
+      bob.accelerate(-0.1);
+    }
+
+    if(spaceKeyPressed == true && (frameCount % 3) == 0)
+      bullets.add(new Bullet(bob));
+
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
+    {
+      bob.turn(-5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+    {
+      bob.turn(5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+    {
+      bob.turn(5);
+      bullets.add(new Bullet(bob));
+    }
+
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+    {
+      bob.turn(-5);
+      bullets.add(new Bullet(bob));
+    }
+
+    //moves and shows bullets
+    for(int i = 0; i < bullets.size(); i++)
+    {
+      bullets.get(i).move();
+      bullets.get(i).show();
+      
+      //removes bullets from the screen when they leave it
+      if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
+      {
+        bullets.remove(i);
+      }
+    }
+
+    //moves and shows asteroids
+    for (Asteroids ast : asteroidsList)
+    {
+      ast.turn(ast.getRotationSpeed());
+      ast.move();
+      ast.show();
+      float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip < 36)
+      {
+        healthLength -= 5;
+      }
+    }
+
+    //moves and shows smallerAsteroids
+    for(SmallAsteroids smallAst : smallAsteroidsList)
+    {
+      smallAst.turn(smallAst.getRotationSpeed());
+      smallAst.move();
+      smallAst.show();
+
+      float distantAstShip1 = dist(smallAst.getX(), smallAst.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip1 < 16)
+      {
+        healthLength -= 5;
+      }
+    }
+
+    //moves and shows evenSmallerAsteroids
+    for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
+    {
+      evenSmallAst.turn(evenSmallAst.getRotationSpeed());
+      evenSmallAst.move();
+      evenSmallAst.show();
+
+      float distantAstShip2 = dist(evenSmallAst.getX(), evenSmallAst.getY(), bob.getX(), bob.getY());
+      
+      if (distantAstShip2 < 7)
+      {
+        healthLength -= 8;
+      }
+    }
+
+    //moves and shows flying bits
+    for(FlyingBits bits : flyingBitsList)
+    {
+      bits.move();
+      bits.show();
+    }
+
+    //creates new smaller asteroid when bullet hits asteroid
+    for (int i = 0; i<asteroidsList.size(); i++)
+    {
+      for (int j = 0; j<bullets.size(); j++)
+      {
+        float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        if (distance1<20)
+        {
+          
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+
+          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+
+          // for(int k = 0; k<4; i++)
+          // {
+          //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+          // }
+
+          asteroidsList.remove(i);
+          bullets.remove(j);
+          break;
+        }
+      }
+    }
+
+    //creates new evensmaller asteroid when bullet hits smaller asteroid
+    for (int i = 0; i<smallAsteroidsList.size(); i++)
+    {
+      for (int j = 0; j<bullets.size(); j++)
+      {
+        float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        if (distance2<18)
+        {
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+
+          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+          smallAsteroidsList.remove(i);
+          bullets.remove(j);
+          break;
+        }
+      }
+    }
+
+    //deletes smallest asteroids when bullet hits them
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+    {
+      for(int j = 0; j<bullets.size(); j++)
+      {
+        float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+        
+        if (distance3 < 9)
+        {
+          evenSmallerAsteroidsList.remove(i);
+          break;
+        } 
+      }
+      
+    }
+
+    //health bar
+    noStroke();
+    fill(0,100,0);
+    rect(0, 0, 300, 25);
+    fill(0,255,0);
+    rect(0, 0, 2*healthLength, 25);
+}
+
+public void endGame()
+{
+  if(score > maxScore)
+      maxScore = score;
+
+    textSize(30);
+    fill(0,0,255);
+    text("Max Score: " + maxScore, 215, 200);
     fill(255,0,0);
+    text("GAME OVER", 215, 300);
+    rect(200,   400,  200,  70, 10);
+    fill(255);
+    text("Restart", 245,445);
+
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
+
+    bob.restartVariables();
+
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
+    score = 0;
+}
+
+public void wonGame()
+{
+  textSize(30);
+    text("You won!!!", 250,250);
+    fill(255,0,0);
+    rect(200,   400,  200,  70, 10);
+    fill(255);
+    text("Restart", 245,445);
+
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
+
+    bob.restartVariables();
+
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
+    score = 0;
+}
+
+public void level2()
+{
+  fill(255,0,0);
     textSize(20);
     text("Score: " + score, 450, 35);
     score ++;
@@ -286,189 +709,7 @@ public void draw()
     rect(0, 0, 300, 25);
     fill(0,255,0);
     rect(0, 0, 2*healthLength, 25);
-  }
-
-  //end game
-  if (healthLength <= 0)
-  {    
-    gameRunning = false;
-    endGame = true;
-  }
-  
-  if (endGame == true)
-  {
-    if(score > maxScore)
-      maxScore = score;
-
-    textSize(30);
-    fill(0,0,255);
-    text("Max Score: " + maxScore, 215, 200);
-    fill(255,0,0);
-    text("GAME OVER", 215, 300);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
-
-    for(int i = 0; i<bullets.size(); i++)
-      bullets.remove(i);
-    
-    for(int i = 0; i<smallAsteroidsList.size(); i++)
-      smallAsteroidsList.remove(i);
-
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-      evenSmallerAsteroidsList.remove(i);
-
-    for(int i = 0; i<flyingBitsList.size(); i++)
-      flyingBitsList.remove(i);
-
-    for(int i = 0; i<asteroidsList.size(); i++)
-      asteroidsList.remove(i);
-
-    bob.restartVariables();
-
-    for(Stars star : backgroundStars)
-      star.restartVariables();
-
-    score = 0;
-  }
-
-  if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && gameRunning == true)
-  {
-    gameRunning = false;
-    wonGame = true;
-  }
-
-  if(wonGame == true)
-  {
-    textSize(30);
-    text("You won!!!", 250,250);
-    fill(255,0,0);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
-
-    for(int i = 0; i<bullets.size(); i++)
-      bullets.remove(i);
-    
-    for(int i = 0; i<smallAsteroidsList.size(); i++)
-      smallAsteroidsList.remove(i);
-
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-      evenSmallerAsteroidsList.remove(i);
-
-    for(int i = 0; i<flyingBitsList.size(); i++)
-      flyingBitsList.remove(i);
-
-    for(int i = 0; i<asteroidsList.size(); i++)
-      asteroidsList.remove(i);
-
-    bob.restartVariables();
-
-    for(Stars star : backgroundStars)
-      star.restartVariables();
-
-    score = 0;
-  }
 }
-
-public void mouseClicked() {
-  if(endGame == true || wonGame == true)
-  {
-    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
-    {
-      endGame = false;
-      wonGame = false;
-      gameRunning = true;
-      healthLength = 150;
-      for (int i=0; i<numberOfAsteroids; i++)
-        asteroidsList.add(new Asteroids());
-    }
-  }
-
-  if(beginGame == true)
-  {
-    if(mouseY < 360 && mouseY > 260 && mouseX < 450 && mouseX > 150)
-    {
-      gameRunning = true;
-      beginGame = false;
-      for (int i=0; i<numberOfAsteroids; i++)
-        asteroidsList.add(new Asteroids());
-    }
-  }
-}
-
-public void keyPressed()
-{         
-
-  if (key==CODED)
-  {
-    if (keyCode == UP)
-    {
-      upKeyPressed = true;
-    }
-    if (keyCode == DOWN)
-    {
-      downKeyPressed = true;
-    }
-    if (keyCode == LEFT)
-    {
-      leftKeyPressed = true;
-    }
-    if (keyCode == RIGHT)
-    {
-      rightKeyPressed = true;
-    }
-  }
-
-  if (key == ' ')
-  {
-    spaceKeyPressed = true;
-  }
-  
-  if (key == 's')
-  {
-    bob.setDirectionX(0);
-    bob.setDirectionY(0);
-  }
-}
-
-public void keyReleased()
-{
-  if (key==CODED)
-  {
-    if (keyCode == UP)
-    {
-      upKeyPressed = false;
-    }
-    if (keyCode == DOWN)
-    {
-      downKeyPressed = false;
-    }
-    if (keyCode == LEFT)
-    {
-      leftKeyPressed = false;
-    }
-    if (keyCode == RIGHT)
-    {
-      rightKeyPressed = false;
-    }
-  }
-
-  if (key == ' ')
-    spaceKeyPressed = false;
-}
-
-public void keyTyped()
-{
-  if (key == 'r')
-  {
-    bob.setX((int)(Math.random()*width));
-    bob.setY((int)(Math.random()*height));
-    bob.setDirectionX(0);
-    bob.setDirectionY(0);
-  }
-}
-
 class SpaceShip extends Floater  
 {   
   SpaceShip()
@@ -529,7 +770,7 @@ class EnemyShip extends Floater
     yCorners = yS;
     myColor = color(239,30,11);
     myColor2 = 255;
-    myCenterX = 300;
+    myCenterX = 0;
     myCenterY = 300;
     myDirectionX = 0;
     myDirectionY = 0;
@@ -550,8 +791,16 @@ class EnemyShip extends Floater
   public void move(SpaceShip ship)
   {
     myPointDirection=(Math.atan2(ship.getY()-myCenterY,ship.getX()-myCenterX))/PI*180;
+    myDirectionX = Math.cos(myPointDirection*PI/180)*2;
+    myDirectionY = Math.sin(myPointDirection*PI/180)*2;
     myCenterX += myDirectionX;
     myCenterY += myDirectionY;
+
+    if(ship.getX() == myCenterX && ship.getY() == myCenterY)
+    {
+      myDirectionY = 0;
+      myDirectionX = 0;
+    }
   }
 }
 
