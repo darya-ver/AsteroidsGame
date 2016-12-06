@@ -1,6 +1,7 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
-EnemyShip crab = new EnemyShip();
+EnemyShip crab = new EnemyShip(3);
+//EnemyShip crab2 = new EnemyShip(400);
 Stars [] backgroundStars = new Stars[150];
 
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
@@ -15,10 +16,10 @@ int score = 0;
 int maxScore = 0;
 
 boolean level1 = false;
-boolean beginGame = true;
+boolean beginGame = false;
 boolean endGame = false;
 boolean wonGame = false;
-boolean level2 = false;
+boolean level2 = true;
 
 boolean leftKeyPressed = false;
 boolean rightKeyPressed = false;
@@ -30,7 +31,7 @@ public void setup()
 {
   size(600, 600);
   background(0);
-  
+
   for (int i = 0; i<backgroundStars.length; i++)
   {
     backgroundStars[i]=new Stars();
@@ -51,19 +52,6 @@ public void draw()
   if (endGame == true) {endGame();}
   if(wonGame == true) {wonGame();}
   if(level2 == true) {level2();}
-  
-  if (healthLength <= 0)
-  {    
-    level1 = false;
-    endGame = true;
-  }
-
-  if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && level1 == true)
-  {
-    level1 = false;
-    level2 = true;
-  }
-
 }
 
 public void mouseClicked() 
@@ -214,7 +202,8 @@ class SpaceShip extends Floater
 
 class EnemyShip extends Floater
 {
-  EnemyShip()
+  public int myHealth;
+  EnemyShip(int startY)
   {
     corners = 10;
     int [] xS = {14,1,-10,-4,-6,-8,-8,-4,-10,1};
@@ -226,10 +215,11 @@ class EnemyShip extends Floater
     myColor = color(239,30,11);
     myColor2 = 255;
     myCenterX = 0;
-    myCenterY = 300;
+    myCenterY = startY;
     myDirectionX = 0;
     myDirectionY = 0;
     myPointDirection = 0;
+    myHealth = 40;
   }
 
   public void setX(int x) {myCenterX = x;}
@@ -246,8 +236,8 @@ class EnemyShip extends Floater
   public void move(SpaceShip ship)
   {
     myPointDirection=(Math.atan2(ship.getY()-myCenterY,ship.getX()-myCenterX))/PI*180;
-    myDirectionX = Math.cos(myPointDirection*PI/180)*2;
-    myDirectionY = Math.sin(myPointDirection*PI/180)*2;
+    myDirectionX = Math.cos(myPointDirection*PI/180)*3;
+    myDirectionY = Math.sin(myPointDirection*PI/180)*3;
     myCenterX += myDirectionX;
     myCenterY += myDirectionY;
 
@@ -256,6 +246,48 @@ class EnemyShip extends Floater
       myDirectionY = 0;
       myDirectionX = 0;
     }
+  }
+
+  public void show ()
+  {             
+    fill(myColor);   
+    stroke(myColor2);    
+    
+    //translate the (x,y) center of the ship to the correct position
+    translate((float)myCenterX, (float)myCenterY);
+
+    //convert degrees to radians for rotate()     
+    float dRadians = (float)(myPointDirection*(Math.PI/180));
+    
+    //rotate so that the polygon will be drawn in the correct direction
+    rotate(dRadians);
+    
+    //draw the polygon
+    beginShape();
+    for (int nI = 0; nI < corners; nI++)
+    {
+      vertex(xCorners[nI], yCorners[nI]);
+    }
+    endShape(CLOSE);
+
+    //"unrotate" and "untranslate" in reverse order
+    rotate(-1*dRadians);
+    translate(-1*(float)myCenterX, -1*(float)myCenterY);
+
+    //HEALTH BAR
+    fill(110);
+    rect((float)myCenterX - 15, (float)myCenterY + 20, 40, 5);
+    fill(0,255,0);
+    rect((float)myCenterX - 15, (float)myCenterY + 20, myHealth, 5);
+  }  
+
+  public void restartVariables(int startY) {
+    myCenterX = 0;
+    myCenterY = startY;
+    myDirectionX = 0;
+    myDirectionY = 0;
+    myPointDirection = 0;
+    myHealth = 40;
   }
 }
 
@@ -601,221 +633,233 @@ public void beginGame()
 public void level1()
 {
   fill(255,0,0);
-    textSize(20);
-    text("Score: " + score, 450, 35);
-    score ++;
+  textSize(20);
+  text("Score: " + score, 450, 35);
+  score ++;
+  
+  //shows stars
+  for (Stars star : backgroundStars)
+  {
+    star.show();
+    star.move(bob);
+  }
+
+  bob.move();
+  bob.show();
+
+  if (healthLength <= 0)
+  {    
+    level1 = false;
+    endGame = true;
+  }
+
+  if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && level1 == true)
+  {
+    level1 = false;
+    level2 = true;
+  }
+
+  if(upKeyPressed == true)
+    bob.accelerate(0.1);
+  if(downKeyPressed == true)
+    bob.accelerate(-0.1);
+  if(leftKeyPressed == true)
+    bob.turn(-5);
+  if(rightKeyPressed == true)
+    bob.turn(5);
+
+  if(leftKeyPressed == true && upKeyPressed == true)
+  {
+    bob.turn(-5);
+    bob.accelerate(0.1);
+  }
+
+  if(rightKeyPressed == true && upKeyPressed == true)
+  {
+    bob.turn(5);
+    bob.accelerate(0.1);
+  }
+
+  if(rightKeyPressed == true && downKeyPressed == true)
+  {
+    bob.turn(5);
+    bob.accelerate(-0.1);
+  }
+
+  if(leftKeyPressed == true && downKeyPressed == true)
+  {
+    bob.turn(-5);
+    bob.accelerate(-0.1);
+  }
+
+  if(spaceKeyPressed == true && (frameCount % 3) == 0)
+    bullets.add(new Bullet(bob));
+
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
+  {
+    bob.turn(-5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(-5);
+    bullets.add(new Bullet(bob));
+  }
+
+  //moves and shows bullets
+  for(int i = 0; i < bullets.size(); i++)
+  {
+    bullets.get(i).move();
+    bullets.get(i).show();
     
-    //shows stars
-    for (Stars star : backgroundStars)
+    //removes bullets from the screen when they leave it
+    if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
     {
-      star.show();
-      star.move(bob);
+      bullets.remove(i);
     }
+  }
 
-    bob.move();
-    bob.show();
-
-    if(upKeyPressed == true)
-      bob.accelerate(0.1);
-    if(downKeyPressed == true)
-      bob.accelerate(-0.1);
-    if(leftKeyPressed == true)
-      bob.turn(-5);
-    if(rightKeyPressed == true)
-      bob.turn(5);
-
-    if(leftKeyPressed == true && upKeyPressed == true)
+  //moves and shows asteroids
+  for (Asteroids ast : asteroidsList)
+  {
+    ast.turn(ast.getRotationSpeed());
+    ast.move();
+    ast.show();
+    float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
+    
+    if (distantAstShip < 36)
     {
-      bob.turn(-5);
-      bob.accelerate(0.1);
+      healthLength -= 5;
     }
+  }
 
-    if(rightKeyPressed == true && upKeyPressed == true)
+  //moves and shows smallerAsteroids
+  for(SmallAsteroids smallAst : smallAsteroidsList)
+  {
+    smallAst.turn(smallAst.getRotationSpeed());
+    smallAst.move();
+    smallAst.show();
+
+    float distantAstShip1 = dist(smallAst.getX(), smallAst.getY(), bob.getX(), bob.getY());
+    
+    if (distantAstShip1 < 16)
     {
-      bob.turn(5);
-      bob.accelerate(0.1);
+      healthLength -= 5;
     }
+  }
 
-    if(rightKeyPressed == true && downKeyPressed == true)
+  //moves and shows evenSmallerAsteroids
+  for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
+  {
+    evenSmallAst.turn(evenSmallAst.getRotationSpeed());
+    evenSmallAst.move();
+    evenSmallAst.show();
+
+    float distantAstShip2 = dist(evenSmallAst.getX(), evenSmallAst.getY(), bob.getX(), bob.getY());
+    
+    if (distantAstShip2 < 7)
     {
-      bob.turn(5);
-      bob.accelerate(-0.1);
+      healthLength -= 8;
     }
+  }
 
-    if(leftKeyPressed == true && downKeyPressed == true)
+  //moves and shows flying bits
+  for(FlyingBits bits : flyingBitsList)
+  {
+    bits.move();
+    bits.show();
+  }
+
+  //creates new smaller asteroid when bullet hits asteroid
+  for (int i = 0; i<asteroidsList.size(); i++)
+  {
+    for (int j = 0; j<bullets.size(); j++)
     {
-      bob.turn(-5);
-      bob.accelerate(-0.1);
-    }
-
-    if(spaceKeyPressed == true && (frameCount % 3) == 0)
-      bullets.add(new Bullet(bob));
-
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
-    {
-      bob.turn(-5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(-5);
-      bullets.add(new Bullet(bob));
-    }
-
-    //moves and shows bullets
-    for(int i = 0; i < bullets.size(); i++)
-    {
-      bullets.get(i).move();
-      bullets.get(i).show();
-      
-      //removes bullets from the screen when they leave it
-      if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
+      float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+      if (distance1<20)
       {
-        bullets.remove(i);
-      }
-    }
-
-    //moves and shows asteroids
-    for (Asteroids ast : asteroidsList)
-    {
-      ast.turn(ast.getRotationSpeed());
-      ast.move();
-      ast.show();
-      float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip < 36)
-      {
-        healthLength -= 5;
-      }
-    }
-
-    //moves and shows smallerAsteroids
-    for(SmallAsteroids smallAst : smallAsteroidsList)
-    {
-      smallAst.turn(smallAst.getRotationSpeed());
-      smallAst.move();
-      smallAst.show();
-
-      float distantAstShip1 = dist(smallAst.getX(), smallAst.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip1 < 16)
-      {
-        healthLength -= 5;
-      }
-    }
-
-    //moves and shows evenSmallerAsteroids
-    for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
-    {
-      evenSmallAst.turn(evenSmallAst.getRotationSpeed());
-      evenSmallAst.move();
-      evenSmallAst.show();
-
-      float distantAstShip2 = dist(evenSmallAst.getX(), evenSmallAst.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip2 < 7)
-      {
-        healthLength -= 8;
-      }
-    }
-
-    //moves and shows flying bits
-    for(FlyingBits bits : flyingBitsList)
-    {
-      bits.move();
-      bits.show();
-    }
-
-    //creates new smaller asteroid when bullet hits asteroid
-    for (int i = 0; i<asteroidsList.size(); i++)
-    {
-      for (int j = 0; j<bullets.size(); j++)
-      {
-        float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        if (distance1<20)
-        {
-          
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-
-          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-
-          // for(int k = 0; k<4; i++)
-          // {
-          //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          // }
-
-          asteroidsList.remove(i);
-          bullets.remove(j);
-          break;
-        }
-      }
-    }
-
-    //creates new evensmaller asteroid when bullet hits smaller asteroid
-    for (int i = 0; i<smallAsteroidsList.size(); i++)
-    {
-      for (int j = 0; j<bullets.size(); j++)
-      {
-        float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        if (distance2<18)
-        {
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-
-          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-          smallAsteroidsList.remove(i);
-          bullets.remove(j);
-          break;
-        }
-      }
-    }
-
-    //deletes smallest asteroids when bullet hits them
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-    {
-      for(int j = 0; j<bullets.size(); j++)
-      {
-        float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
         
-        if (distance3 < 9)
-        {
-          evenSmallerAsteroidsList.remove(i);
-          break;
-        } 
-      }
-      
-    }
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
 
-    //health bar
-    noStroke();
-    fill(0,100,0);
-    rect(0, 0, 300, 25);
-    fill(0,255,0);
-    rect(0, 0, 2*healthLength, 25);
+        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+        smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
+
+        // for(int k = 0; k<4; i++)
+        // {
+        //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
+        // }
+
+        asteroidsList.remove(i);
+        bullets.remove(j);
+        break;
+      }
+    }
+  }
+
+  //creates new evensmaller asteroid when bullet hits smaller asteroid
+  for (int i = 0; i<smallAsteroidsList.size(); i++)
+  {
+    for (int j = 0; j<bullets.size(); j++)
+    {
+      float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+      if (distance2<18)
+      {
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+        flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
+
+        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+        evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
+        smallAsteroidsList.remove(i);
+        bullets.remove(j);
+        break;
+      }
+    }
+  }
+
+  //deletes smallest asteroids when bullet hits them
+  for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+  {
+    for(int j = 0; j<bullets.size(); j++)
+    {
+      float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
+      
+      if (distance3 < 9)
+      {
+        evenSmallerAsteroidsList.remove(i);
+        break;
+      } 
+    }
+    
+  }
+
+  //health bar
+  noStroke();
+  fill(0,100,0);
+  rect(0, 0, 300, 25);
+  fill(0,255,0);
+  rect(0, 0, 2*healthLength, 25);
 }
 
 public void endGame()
@@ -853,6 +897,7 @@ public void endGame()
       star.restartVariables();
 
     score = 0;
+    crab.restartVariables(5);
 }
 
 public void wonGame()
@@ -885,6 +930,9 @@ public void wonGame()
       star.restartVariables();
 
     score = 0;
+
+    crab.restartVariables(5);
+
 }
 
 public void level2()
@@ -894,6 +942,18 @@ public void level2()
     text("Score: " + score, 450, 35);
     score ++;
     
+    if (healthLength <= 0)
+    {    
+      level2 = false;
+      endGame = true;
+    }
+
+    if (crab.myHealth <= 0)
+    {
+      wonGame = true;
+      level2 = false;
+    }
+
     //shows stars
     for (Stars star : backgroundStars)
     {
@@ -906,6 +966,16 @@ public void level2()
 
     crab.move(bob);
     crab.show();
+
+    //crab2.move(bob);
+    //crab2.show();
+
+    double distanceShipEnemy = dist(bob.getX(), bob.getY(), crab.getX(), crab.getY());
+
+    if(distanceShipEnemy < 15)
+    {
+      healthLength -= 5;
+    }
 
     if(upKeyPressed == true)
       bob.accelerate(0.1);
@@ -979,6 +1049,19 @@ public void level2()
         bullets.remove(i);
       }
     }
+
+    //checks distance between bullets and enemy ship
+    for(int i =0; i<bullets.size(); i++)
+    {
+      double distEnemyBullet = dist(crab.getX(), crab.getY(), bullets.get(i).getX(), bullets.get(i).getY());
+
+      if(distEnemyBullet < 15)
+      {
+        crab.myHealth -= 3;
+      }
+    }
+/*
+    
 
     //moves and shows asteroids
     for (Asteroids ast : asteroidsList)
@@ -1101,6 +1184,7 @@ public void level2()
       }
       
     }
+    */
 
     //health bar
     noStroke();
