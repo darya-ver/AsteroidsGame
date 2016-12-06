@@ -1,5 +1,6 @@
 //your variable declarations here
 SpaceShip bob = new SpaceShip();
+EnemyShip crab = new EnemyShip();
 Stars [] backgroundStars = new Stars[150];
 
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
@@ -16,6 +17,7 @@ int maxScore = 0;
 boolean gameRunning = false;
 boolean beginGame = true;
 boolean endGame = false;
+boolean wonGame = false;
 
 boolean leftKeyPressed = false;
 boolean rightKeyPressed = false;
@@ -41,6 +43,10 @@ public void setup()
 public void draw() 
 {
   background(0);
+
+  // textSize(10);
+  // text("Number of Asteroids: " + asteroidsList.size(), 450,50);
+
   if(beginGame == true)
   {
     //Title text
@@ -72,6 +78,12 @@ public void draw()
       star.show();
       star.move(bob);
     }
+
+    bob.move();
+    bob.show();
+
+    // crab.move();
+    // crab.show();
 
     if(upKeyPressed == true)
       bob.accelerate(0.1);
@@ -109,33 +121,29 @@ public void draw()
     if(spaceKeyPressed == true && (frameCount % 3) == 0)
       bullets.add(new Bullet(bob));
 
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
     {
       bob.turn(-5);
       bullets.add(new Bullet(bob));
     }
 
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
     {
       bob.turn(5);
       bullets.add(new Bullet(bob));
     }
 
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
     {
       bob.turn(5);
       bullets.add(new Bullet(bob));
     }
 
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 5) == 0)
+    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
     {
       bob.turn(-5);
       bullets.add(new Bullet(bob));
     }
-
-
-    bob.move();
-    bob.show();
 
     //moves and shows bullets
     for(int i = 0; i < bullets.size(); i++)
@@ -158,7 +166,7 @@ public void draw()
       ast.show();
       float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
       
-      if (distantAstShip < 23)
+      if (distantAstShip < 36)
       {
         healthLength -= 5;
       }
@@ -238,7 +246,7 @@ public void draw()
       for (int j = 0; j<bullets.size(); j++)
       {
         float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        if (distance2<10)
+        if (distance2<18)
         {
           flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
           flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
@@ -263,7 +271,7 @@ public void draw()
       {
         float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
         
-        if (distance3 < 8)
+        if (distance3 < 9)
         {
           evenSmallerAsteroidsList.remove(i);
           break;
@@ -316,8 +324,43 @@ public void draw()
     for(int i = 0; i<asteroidsList.size(); i++)
       asteroidsList.remove(i);
 
-    for (int i=0; i<numberOfAsteroids; i++)
-      asteroidsList.add(new Asteroids());
+    bob.restartVariables();
+
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
+    score = 0;
+  }
+
+  if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && gameRunning == true)
+  {
+    gameRunning = false;
+    wonGame = true;
+  }
+
+  if(wonGame == true)
+  {
+    textSize(30);
+    text("You won!!!", 250,250);
+    fill(255,0,0);
+    rect(200,   400,  200,  70, 10);
+    fill(255);
+    text("Restart", 245,445);
+
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
 
     bob.restartVariables();
 
@@ -329,22 +372,27 @@ public void draw()
 }
 
 public void mouseClicked() {
-  if(endGame == true)
+  if(endGame == true || wonGame == true)
   {
     if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
     {
       endGame = false;
+      wonGame = false;
       gameRunning = true;
       healthLength = 150;
+      for (int i=0; i<numberOfAsteroids; i++)
+        asteroidsList.add(new Asteroids());
     }
   }
 
-  else if(beginGame == true)
+  if(beginGame == true)
   {
     if(mouseY < 360 && mouseY > 260 && mouseX < 450 && mouseX > 150)
     {
       gameRunning = true;
       beginGame = false;
+      for (int i=0; i<numberOfAsteroids; i++)
+        asteroidsList.add(new Asteroids());
     }
   }
 }
@@ -432,7 +480,8 @@ class SpaceShip extends Floater
     yCorners = new int[corners];
     xCorners = xS;
     yCorners = yS;
-    myColor = 255;
+    myColor = color(66,134,244);
+    myColor2 = 255;
     myCenterX = 300;
     myCenterY = 300;
     myDirectionX = 0;
@@ -467,19 +516,57 @@ class SpaceShip extends Floater
     }
 }
 
+class EnemyShip extends Floater
+{
+  EnemyShip()
+  {
+    corners = 10;
+    int [] xS = {14,1,-10,-4,-6,-8,-8,-4,-10,1};
+    int [] yS = {0,18,18,9,6,6,-6,-9,-18,-18};
+    xCorners = new int[corners];
+    yCorners = new int[corners];
+    xCorners = xS;
+    yCorners = yS;
+    myColor = color(239,30,11);
+    myColor2 = 255;
+    myCenterX = 300;
+    myCenterY = 300;
+    myDirectionX = 0;
+    myDirectionY = 0;
+    myPointDirection = 0;
+  }
+
+  public void setX(int x) {myCenterX = x;}
+  public int getX() {return (int)myCenterX;} 
+  public void setY(int y){myCenterY = y;}
+  public int getY(){return (int)myCenterY;}
+  public void setDirectionX(double x) { myDirectionX = x;}
+  public double getDirectionX(){ return (double)myDirectionX;} 
+  public void setDirectionY(double y) {myDirectionY = y;}
+  public double getDirectionY(){return (double)myDirectionY;}
+  public void setPointDirection(int degrees) { myPointDirection = degrees; }
+  public double getPointDirection() { return (double)myPointDirection;}
+
+  // public void move(Spaceship ship)
+  // {
+  //   if(ship.getX() > )
+  // }
+}
+
 class Asteroids extends Floater
 {
   protected int rotationSpeed;
   Asteroids()
   {
-    corners = 4;
-    int [] xS = {34,6, -24, -10,28};
-    int [] yS = {0,36,-2,-16,-18};
+    corners = 10;
+    int [] xS = {-20,0,20,36,24,16,0,-16,-24,-36};
+    int [] yS = {16,8,16,0,-12,-32,-24,-32,-12,0};
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners = xS;
     yCorners = yS;
     myColor = 100;
+    myColor2 = 255;
     myCenterX = (Math.random()*width);
     myCenterY = (Math.random()*height);
     myDirectionX = Math.random()*5-2;
@@ -527,14 +614,15 @@ class SmallAsteroids extends Asteroids
 {
   SmallAsteroids(Asteroids dadAsteroid)
   {
-    corners = 4;
-    int [] xS = {17,3, -12, -5,14};
-    int [] yS = {0,18,-1,-8,-9};
+    corners = 10;
+    int [] xS = {-10,0,10,18,12,8,0,-8,-12,-18};
+    int [] yS = {8,4,8,0,-6,-16,-12,-16,-6,0};
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners = xS;
     yCorners = yS;
     myColor = 100;
+    myColor2 = 255;
     myCenterX = dadAsteroid.getX();
     myCenterY = dadAsteroid.getY();
     myDirectionX = Math.random()*5-2;
@@ -554,14 +642,15 @@ class EvenSmallerAsteroids extends Asteroids
 {
   EvenSmallerAsteroids(SmallAsteroids dadAsteroid)
   {
-    corners = 4;
-    int [] xS = {8,1, -6, -2,7};
-    int [] yS = {0,9,-1,-4,-4};
+    corners = 10;
+    int [] xS = {-5,0,5,9,6,4,0,-4,-6,-9};
+    int [] yS = {4,2,4,0,-3,-8,-6,-8,-3,0};
     xCorners = new int[corners];
     yCorners = new int[corners];
     xCorners = xS;
     yCorners = yS;
     myColor = 100;
+    myColor2 = 255;
     myCenterX = dadAsteroid.getX();
     myCenterY = dadAsteroid.getY();
     myDirectionX = Math.random()*5-2;
@@ -581,14 +670,8 @@ class FlyingBits extends Asteroids
 {
   FlyingBits(Asteroids asteroid)
   {
-    corners = 6;
-    int [] xS = {0,3, 3, 0,-3, -3};
-    int [] yS = {6,3,-3,-6,-6,3};
-    xCorners = new int[corners];
-    yCorners = new int[corners];
-    xCorners = xS;
-    yCorners = yS;
     myColor = 100;
+    myColor2 = 255;
     myCenterX = asteroid.getX();
     myCenterY = asteroid.getY();
     myDirectionX = (Math.random()*5-2)*3;
@@ -607,6 +690,12 @@ class FlyingBits extends Asteroids
   {
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;        
+  }
+
+  public void show()
+  {
+    fill(myColor);
+    ellipse((float)myCenterX, (float)myCenterY, 5,5);
   }
 }
 
@@ -635,8 +724,8 @@ class Bullet extends Floater
 
   public void show()
   {
-    fill(25,100,6);
-    noStroke();
+    fill(239,110,11);
+    stroke(255);
     ellipse((float)myCenterX, (float)myCenterY, 10, 10);
   }
 
@@ -652,7 +741,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   protected int corners;  //the number of corners, a triangular floater has 3   
   protected int[] xCorners;   
   protected int[] yCorners;   
-  protected int myColor;   
+  protected int myColor, myColor2;   
   protected double myCenterX, myCenterY; //holds center coordinates   
   protected double myDirectionX, myDirectionY; //holds x and y coordinates of the vector for direction of travel   
   protected double myPointDirection; //holds current direction the ship is pointing in degrees    
@@ -709,7 +798,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
-    stroke(myColor);    
+    stroke(myColor2);    
     
     //translate the (x,y) center of the ship to the correct position
     translate((float)myCenterX, (float)myCenterY);
