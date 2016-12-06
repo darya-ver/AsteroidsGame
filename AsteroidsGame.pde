@@ -82,8 +82,8 @@ public void draw()
     bob.move();
     bob.show();
 
-    // crab.move();
-    // crab.show();
+    crab.move(bob);
+    crab.show();
 
     if(upKeyPressed == true)
       bob.accelerate(0.1);
@@ -547,10 +547,12 @@ class EnemyShip extends Floater
   public void setPointDirection(int degrees) { myPointDirection = degrees; }
   public double getPointDirection() { return (double)myPointDirection;}
 
-  // public void move(Spaceship ship)
-  // {
-  //   if(ship.getX() > )
-  // }
+  public void move(SpaceShip ship)
+  {
+    myPointDirection=(Math.atan2(ship.getY()-myCenterY,ship.getX()-myCenterX))/PI*180;
+    myCenterX += myDirectionX;
+    myCenterY += myDirectionY;
+  }
 }
 
 class Asteroids extends Floater
