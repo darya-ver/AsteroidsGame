@@ -655,8 +655,12 @@ public void level1()
 
   if(asteroidsList.size()==0 && smallAsteroidsList.size()==0 && evenSmallerAsteroidsList.size() == 0 && level1 == true)
   {
-    level1 = false;
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+
     level2 = true;
+    level1 = false;
+    
   }
 
   if(upKeyPressed == true)
@@ -802,11 +806,6 @@ public void level1()
         smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
         smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
 
-        // for(int k = 0; k<4; i++)
-        // {
-        //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-        // }
-
         asteroidsList.remove(i);
         bullets.remove(j);
         break;
@@ -937,260 +936,136 @@ public void wonGame()
 
 public void level2()
 {
+
   fill(255,0,0);
-    textSize(20);
-    text("Score: " + score, 450, 35);
-    score ++;
+  textSize(20);
+  text("Score: " + score, 450, 35);
+  score ++;
+  
+  if (healthLength <= 0)
+  {    
+    level2 = false;
+    endGame = true;
+  }
+
+  if (crab.myHealth <= 0)
+  {
+    wonGame = true;
+    level2 = false;
+  }
+
+  //shows stars
+  for (Stars star : backgroundStars)
+  {
+    star.show();
+    star.move(bob);
+  }
+
+  bob.move();
+  bob.show();
+
+  crab.move(bob);
+  crab.show();
+
+  //crab2.move(bob);
+  //crab2.show();
+
+  double distanceShipEnemy = dist(bob.getX(), bob.getY(), crab.getX(), crab.getY());
+
+  if(distanceShipEnemy < 15)
+  {
+    healthLength -= 5;
+  }
+
+  if(upKeyPressed == true)
+    bob.accelerate(0.1);
+  if(downKeyPressed == true)
+    bob.accelerate(-0.1);
+  if(leftKeyPressed == true)
+    bob.turn(-5);
+  if(rightKeyPressed == true)
+    bob.turn(5);
+
+  if(leftKeyPressed == true && upKeyPressed == true)
+  {
+    bob.turn(-5);
+    bob.accelerate(0.1);
+  }
+
+  if(rightKeyPressed == true && upKeyPressed == true)
+  {
+    bob.turn(5);
+    bob.accelerate(0.1);
+  }
+
+  if(rightKeyPressed == true && downKeyPressed == true)
+  {
+    bob.turn(5);
+    bob.accelerate(-0.1);
+  }
+
+  if(leftKeyPressed == true && downKeyPressed == true)
+  {
+    bob.turn(-5);
+    bob.accelerate(-0.1);
+  }
+
+  if(spaceKeyPressed == true && (frameCount % 3) == 0)
+    bullets.add(new Bullet(bob));
+
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
+  {
+    bob.turn(-5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(5);
+    bullets.add(new Bullet(bob));
+  }
+
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  {
+    bob.turn(-5);
+    bullets.add(new Bullet(bob));
+  }
+
+  //moves and shows bullets
+  for(int i = 0; i < bullets.size(); i++)
+  {
+    bullets.get(i).move();
+    bullets.get(i).show();
     
-    if (healthLength <= 0)
-    {    
-      level2 = false;
-      endGame = true;
-    }
-
-    if (crab.myHealth <= 0)
+    //removes bullets from the screen when they leave it
+    if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
     {
-      wonGame = true;
-      level2 = false;
+      bullets.remove(i);
     }
+  }
 
-    //shows stars
-    for (Stars star : backgroundStars)
+  //checks distance between bullets and enemy ship
+  for(int i =0; i<bullets.size(); i++)
+  {
+    double distEnemyBullet = dist(crab.getX(), crab.getY(), bullets.get(i).getX(), bullets.get(i).getY());
+
+    if(distEnemyBullet < 15)
     {
-      star.show();
-      star.move(bob);
+      crab.myHealth -= 3;
     }
+  }
 
-    bob.move();
-    bob.show();
-
-    crab.move(bob);
-    crab.show();
-
-    //crab2.move(bob);
-    //crab2.show();
-
-    double distanceShipEnemy = dist(bob.getX(), bob.getY(), crab.getX(), crab.getY());
-
-    if(distanceShipEnemy < 15)
-    {
-      healthLength -= 5;
-    }
-
-    if(upKeyPressed == true)
-      bob.accelerate(0.1);
-    if(downKeyPressed == true)
-      bob.accelerate(-0.1);
-    if(leftKeyPressed == true)
-      bob.turn(-5);
-    if(rightKeyPressed == true)
-      bob.turn(5);
-
-    if(leftKeyPressed == true && upKeyPressed == true)
-    {
-      bob.turn(-5);
-      bob.accelerate(0.1);
-    }
-
-    if(rightKeyPressed == true && upKeyPressed == true)
-    {
-      bob.turn(5);
-      bob.accelerate(0.1);
-    }
-
-    if(rightKeyPressed == true && downKeyPressed == true)
-    {
-      bob.turn(5);
-      bob.accelerate(-0.1);
-    }
-
-    if(leftKeyPressed == true && downKeyPressed == true)
-    {
-      bob.turn(-5);
-      bob.accelerate(-0.1);
-    }
-
-    if(spaceKeyPressed == true && (frameCount % 3) == 0)
-      bullets.add(new Bullet(bob));
-
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
-    {
-      bob.turn(-5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(5);
-      bullets.add(new Bullet(bob));
-    }
-
-    if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
-    {
-      bob.turn(-5);
-      bullets.add(new Bullet(bob));
-    }
-
-    //moves and shows bullets
-    for(int i = 0; i < bullets.size(); i++)
-    {
-      bullets.get(i).move();
-      bullets.get(i).show();
-      
-      //removes bullets from the screen when they leave it
-      if (bullets.get(i).getX() >= width || bullets.get(i).getX() <= 0 || bullets.get(i).getY() >= height || bullets.get(i).getY() <= 0)
-      {
-        bullets.remove(i);
-      }
-    }
-
-    //checks distance between bullets and enemy ship
-    for(int i =0; i<bullets.size(); i++)
-    {
-      double distEnemyBullet = dist(crab.getX(), crab.getY(), bullets.get(i).getX(), bullets.get(i).getY());
-
-      if(distEnemyBullet < 15)
-      {
-        crab.myHealth -= 3;
-      }
-    }
-/*
-    
-
-    //moves and shows asteroids
-    for (Asteroids ast : asteroidsList)
-    {
-      ast.turn(ast.getRotationSpeed());
-      ast.move();
-      ast.show();
-      float distantAstShip = dist(ast.getX(), ast.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip < 36)
-      {
-        healthLength -= 5;
-      }
-    }
-
-    //moves and shows smallerAsteroids
-    for(SmallAsteroids smallAst : smallAsteroidsList)
-    {
-      smallAst.turn(smallAst.getRotationSpeed());
-      smallAst.move();
-      smallAst.show();
-
-      float distantAstShip1 = dist(smallAst.getX(), smallAst.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip1 < 16)
-      {
-        healthLength -= 5;
-      }
-    }
-
-    //moves and shows evenSmallerAsteroids
-    for(EvenSmallerAsteroids evenSmallAst : evenSmallerAsteroidsList)
-    {
-      evenSmallAst.turn(evenSmallAst.getRotationSpeed());
-      evenSmallAst.move();
-      evenSmallAst.show();
-
-      float distantAstShip2 = dist(evenSmallAst.getX(), evenSmallAst.getY(), bob.getX(), bob.getY());
-      
-      if (distantAstShip2 < 7)
-      {
-        healthLength -= 8;
-      }
-    }
-
-    //moves and shows flying bits
-    for(FlyingBits bits : flyingBitsList)
-    {
-      bits.move();
-      bits.show();
-    }
-
-    //creates new smaller asteroid when bullet hits asteroid
-    for (int i = 0; i<asteroidsList.size(); i++)
-    {
-      for (int j = 0; j<bullets.size(); j++)
-      {
-        float distance1 = dist(asteroidsList.get(i).getX(), asteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        if (distance1<20)
-        {
-          
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-
-          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-          smallAsteroidsList.add(new SmallAsteroids(asteroidsList.get(i)));
-
-          // for(int k = 0; k<4; i++)
-          // {
-          //   flyingBitsList.add(new FlyingBits(asteroidsList.get(i)));
-          // }
-
-          asteroidsList.remove(i);
-          bullets.remove(j);
-          break;
-        }
-      }
-    }
-
-    //creates new evensmaller asteroid when bullet hits smaller asteroid
-    for (int i = 0; i<smallAsteroidsList.size(); i++)
-    {
-      for (int j = 0; j<bullets.size(); j++)
-      {
-        float distance2 = dist(smallAsteroidsList.get(i).getX(), smallAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        if (distance2<18)
-        {
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-          flyingBitsList.add(new FlyingBits(smallAsteroidsList.get(i)));
-
-          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-          evenSmallerAsteroidsList.add(new EvenSmallerAsteroids(smallAsteroidsList.get(i)));
-          smallAsteroidsList.remove(i);
-          bullets.remove(j);
-          break;
-        }
-      }
-    }
-
-    //deletes smallest asteroids when bullet hits them
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-    {
-      for(int j = 0; j<bullets.size(); j++)
-      {
-        float distance3 = dist(evenSmallerAsteroidsList.get(i).getX(), evenSmallerAsteroidsList.get(i).getY(), bullets.get(j).getX(), bullets.get(j).getY());
-        
-        if (distance3 < 9)
-        {
-          evenSmallerAsteroidsList.remove(i);
-          break;
-        } 
-      }
-      
-    }
-    */
-
-    //health bar
-    noStroke();
-    fill(0,100,0);
-    rect(0, 0, 300, 25);
-    fill(0,255,0);
-    rect(0, 0, 2*healthLength, 25);
+  //health bar
+  noStroke();
+  fill(0,100,0);
+  rect(0, 0, 300, 25);
+  fill(0,255,0);
+  rect(0, 0, 2*healthLength, 25);
 }
 
