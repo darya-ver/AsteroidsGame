@@ -47,11 +47,11 @@ public void draw()
 {
   background(0);
 
-  if(beginGame == true) {beginGame();}
-  if (level1 == true) {level1();}
-  if (endGame == true) {endGame();}
-  if(wonGame == true) {wonGame();}
-  if(level2 == true) {level2();}
+  if(beginGame == true) {beginGameFunc();}
+  if (level1 == true) {level1Func();}
+  if (endGame == true) {endGameFunc();}
+  if(wonGame == true) {wonGameFunc();}
+  if(level2 == true) {level2Func();}
 }
 
 public void mouseClicked() 
@@ -613,7 +613,7 @@ class Stars
   }
 } 
 
-public void beginGame()
+public void beginGameFunc()
 {
   //Title text
     textSize(60);
@@ -630,7 +630,7 @@ public void beginGame()
     text("Play", 250,326);
 }
 
-public void level1()
+public void level1Func()
 {
   fill(255,0,0);
   textSize(20);
@@ -861,7 +861,7 @@ public void level1()
   rect(0, 0, 2*healthLength, 25);
 }
 
-public void endGame()
+public void endGameFunc()
 {
   if(score > maxScore)
       maxScore = score;
@@ -899,7 +899,7 @@ public void endGame()
     crab.restartVariables(5);
 }
 
-public void wonGame()
+public void wonGameFunc()
 {
   textSize(30);
     text("You won!!!", 250,250);
@@ -934,7 +934,7 @@ public void wonGame()
 
 }
 
-public void level2()
+public void level2Func()
 {
 
   fill(255,0,0);
