@@ -1,7 +1,7 @@
 //your variable declarations here
-SpaceShip bob = new SpaceShip();
+SpaceShip bob = new SpaceShip(300,300);
+SpaceShip bob1 = new SpaceShip(300,200);
 EnemyShip crab = new EnemyShip(3);
-//EnemyShip crab2 = new EnemyShip(400);
 Stars [] backgroundStars = new Stars[150];
 
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
@@ -15,17 +15,29 @@ int numberOfAsteroids = 5;
 int score = 0;
 int maxScore = 0;
 
-boolean level1 = false;
+boolean instructions = true;
 boolean beginGame = false;
+boolean level1 = false;
+boolean level2 = false;
 boolean endGame = false;
 boolean wonGame = false;
-boolean level2 = true;
 
 boolean leftKeyPressed = false;
 boolean rightKeyPressed = false;
 boolean upKeyPressed = false;
 boolean downKeyPressed = false;
 boolean spaceKeyPressed = false;
+
+boolean mouseLeftKey = false;
+boolean mouseRightKey = false;
+boolean mouseUpKey = false;
+boolean mouseDownKey = false;
+
+Button leftB = new Button(185,330,"left");
+Button rightB = new Button(345,330,"right");
+Button upB = new Button(265,250, "up");
+Button downB = new Button(265,330, "down");
+
 
 public void setup() 
 {
@@ -47,6 +59,7 @@ public void draw()
 {
   background(0);
 
+  if(instructions == true) {instructionsFunc();}
   if(beginGame == true) {beginGameFunc();}
   if (level1 == true) {level1Func();}
   if (endGame == true) {endGameFunc();}
@@ -155,7 +168,7 @@ public void keyTyped()
 
 class SpaceShip extends Floater  
 {   
-  SpaceShip()
+  SpaceShip(int x, int y)
   {
     corners = 10;
     int [] xS = {14,1,-10,-4,-6,-8,-8,-4,-10,1};
@@ -166,8 +179,8 @@ class SpaceShip extends Floater
     yCorners = yS;
     myColor = color(66,134,244);
     myColor2 = 255;
-    myCenterX = 300;
-    myCenterY = 300;
+    myCenterX = x;
+    myCenterY = y;
     myDirectionX = 0;
     myDirectionY = 0;
     myPointDirection = 0;
@@ -203,6 +216,7 @@ class SpaceShip extends Floater
 class EnemyShip extends Floater
 {
   public int myHealth;
+
   EnemyShip(int startY)
   {
     corners = 10;
@@ -536,7 +550,8 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
-    stroke(myColor2);    
+    stroke(myColor2);  
+    strokeWeight(1);  
     
     //translate the (x,y) center of the ship to the correct position
     translate((float)myCenterX, (float)myCenterY);
@@ -612,6 +627,160 @@ class Stars
     myOpacity = (int)(Math.random()*200);
   }
 } 
+
+class Button
+{
+  private int myX, myY, myColor;
+  private String myType;
+  private boolean colorSwitch = true;
+
+  Button(int x, int y, String type)
+  {
+    myX = x;
+    myY = y;
+    myType = type;
+    myColor = 255;
+  }
+
+  public void show()
+  {
+    fill(myColor);
+    rect(myX, myY, 70,70, 10);
+    
+    if (myType == "left")
+    {
+      strokeWeight(3);
+      stroke(0);
+      line(myX + 14, myY + 35, myX + 56, myY + 35);
+      line(myX + 14, myY + 35, myX + 27, myY + 24);
+      line(myX + 14, myY + 35, myX + 27, myY + 46);
+    }
+    else if(myType == "right")
+    {
+      strokeWeight(3);
+      stroke(0);
+      line(myX + 14, myY + 35, myX + 56, myY + 35);
+      line(myX + 56, myY + 35, myX + 43, myY + 46);
+      line(myX + 56, myY + 35, myX + 43, myY + 24);
+    }
+    else if(myType == "up")
+    {
+      strokeWeight(3);
+      stroke(0);
+      line(myX + 35, myY + 14, myX + 35, myY + 56);
+      line(myX + 35, myY + 14, myX + 24, myY + 27);
+      line(myX + 35, myY + 14, myX + 46, myY + 27);
+    }
+    else if(myType == "down")
+    {
+      strokeWeight(3);
+      stroke(0);
+      line(myX + 35, myY + 14, myX + 35, myY + 56);
+      line(myX + 35, myY + 56, myX + 24, myY + 43);
+      line(myX + 35, myY + 56, myX + 46, myY + 43);
+    }
+  }
+  
+  public void highlighted()
+  {
+    if(colorSwitch == true)
+    {
+      myColor = 100;  
+      colorSwitch = false;
+    }
+    else if(colorSwitch == false)
+    {
+      myColor = 255;
+      colorSwitch = true;
+    }
+
+      
+  }   
+}
+
+public void instructionsFunc()
+{
+  fill(10,250,150);
+  textSize(30);
+  text("Instructions:", 40, 40);
+  textSize(20);
+  text("Go over each button to see what it does to the ship", 40, 80);
+  
+  leftB.show();
+  rightB.show();
+  upB.show();
+  downB.show();
+
+  bob1.show();
+  bob1.move();
+
+  //left
+  if(mouseX > 185 && mouseX < 255 && mouseY > 330 && mouseY < 400)
+  {
+    mouseLeftKey = true;
+  }
+
+  else if(mouseX > 345 && mouseX < 415 && mouseY > 330 && mouseY < 400)
+  {
+    mouseRightKey = true;
+  }
+
+  else if(mouseX > 265 && mouseX < 335 && mouseY > 250 && mouseY < 320)
+  {
+    mouseUpKey = true;
+  }
+
+  else if(mouseX > 265 && mouseX < 335 && mouseY > 330 && mouseY < 400)
+  {
+    mouseDownKey = true;
+  }
+
+  else
+  {
+    mouseLeftKey = false;
+    mouseRightKey = false;
+    mouseRightKey = false;
+    mouseDownKey = false;
+    //bob1.setPointDirection(0);
+    // bob1.setDirectionX(0);
+    // bob1.setDirectionY(0);
+    bob1.setX(300);
+    bob1.setY(200);
+  }
+
+  if(mouseLeftKey == true)
+  {
+    bob1.setDirectionX(0);
+    bob1.setDirectionY(0);
+    bob1.turn(-5);
+  }
+
+  if(mouseRightKey == true)
+  {
+    bob1.setDirectionX(0);
+    bob1.setDirectionY(0);
+    bob1.turn(5);
+  }
+
+  if(mouseUpKey == true)
+  {
+    bob1.accelerate(0.1);
+  }
+
+  if(mouseDownKey == true)
+  {
+    bob1.accelerate(-0.1);
+  }
+
+
+
+  /*
+  Button leftB = new Button(185,330,"left");
+Button rightB = new Button(345,330,"right");
+Button upB = new Button(265,250, "up");
+Button downB = new Button(265,330, "down");
+*/
+}
 
 public void beginGameFunc()
 {
@@ -1057,7 +1226,7 @@ public void level2Func()
 
     if(distEnemyBullet < 15)
     {
-      crab.myHealth -= 3;
+      crab.myHealth -= 1;
     }
   }
 
