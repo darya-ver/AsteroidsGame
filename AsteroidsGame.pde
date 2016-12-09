@@ -17,6 +17,7 @@ int healthLength = 150;
 int numberOfAsteroids = 5;
 int score = 0;
 int maxScore = 0;
+int timeForBullets = 0;
 
 //different part of game functions
 boolean instructions = true;
@@ -983,25 +984,25 @@ public void level1Func()
   if(spaceKeyPressed == true && (frameCount % 20) == 0)
     bullets.add(new Bullet(bob));
 
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %10) == 0)
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %20) == 0)
   {
     bob.turn(-5);
     bullets.add(new Bullet(bob));
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
   {
     bob.turn(5);
     bullets.add(new Bullet(bob));
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
   {
     bob.turn(5);
     bullets.add(new Bullet(bob));
   }
 
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 10) == 0)
+  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
   {
     bob.turn(-5);
     bullets.add(new Bullet(bob));
@@ -1222,7 +1223,7 @@ public void level2Func()
     bob.accelerate(-0.1);
   }
 
-  if(spaceKeyPressed == true && (frameCount % 3) == 0)
+  if(spaceKeyPressed == true && (frameCount % 20) == 0)
     bullets.add(new Bullet(bob));
 
   if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %20) == 0)
