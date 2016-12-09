@@ -1,20 +1,24 @@
-//your variable declarations here
+//ships and stars
 SpaceShip bob = new SpaceShip(300,300);
 SpaceShip bob1 = new SpaceShip(300,200);
 EnemyShip crab = new EnemyShip(3);
 Stars [] backgroundStars = new Stars[150];
 
+//arraylists
 ArrayList<Asteroids> asteroidsList = new ArrayList<Asteroids>();
 ArrayList<SmallAsteroids> smallAsteroidsList = new ArrayList<SmallAsteroids>();
 ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSmallerAsteroids>();
 ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+ArrayList<Bullet> enemyBullets = new ArrayList<Bullet>();
 
+//number vairables
 int healthLength = 150;
 int numberOfAsteroids = 5;
 int score = 0;
 int maxScore = 0;
 
+//different part of game functions
 boolean instructions = true;
 boolean beginGame = false;
 boolean level1 = false;
@@ -22,21 +26,34 @@ boolean level2 = false;
 boolean endGame = false;
 boolean wonGame = false;
 
+//key pressed booleans
 boolean leftKeyPressed = false;
 boolean rightKeyPressed = false;
 boolean upKeyPressed = false;
 boolean downKeyPressed = false;
 boolean spaceKeyPressed = false;
 
+//if mouse hovers in instructions booleans
 boolean mouseLeftKey = false;
 boolean mouseRightKey = false;
 boolean mouseUpKey = false;
 boolean mouseDownKey = false;
+boolean mouseSpaceKey = false;
+boolean mouseGotItKey = false;
+boolean mouseSkey = false;
+boolean mouseRkey = false;
+boolean mouseResetKey = false;
 
+//buttons in instructions
 Button leftB = new Button(185,330,"left");
 Button rightB = new Button(345,330,"right");
 Button upB = new Button(265,250, "up");
 Button downB = new Button(265,330, "down");
+Button sB = new Button(50, 330, "s");
+Button rB = new Button(450, 330, "r");
+GotItButton resetB = new GotItButton(30, 100, "reset");
+GotItButton gotItB = new GotItButton(500,100, "gotIt");
+SpaceButton spaceB = new SpaceButton();
 
 
 public void setup() 
@@ -69,6 +86,16 @@ public void draw()
 
 public void mouseClicked() 
 {
+  if(instructions == true)
+  {
+    if(mouseX > 500 && mouseX < 570 && mouseY > 100 && mouseY < 140)
+    {
+      beginGame = true;
+      instructions = false;
+    }
+    if(mouseX > 30 && mouseX < 100 && mouseY > 100 && mouseY < 140)
+    {bob1.restartVariables();}
+  }
   if(endGame == true || wonGame == true)
   {
     if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
@@ -161,6 +188,7 @@ public void keyTyped()
   {
     bob.setX((int)(Math.random()*width));
     bob.setY((int)(Math.random()*height));
+    bob.setPointDirection((int)(Math.random()*360));
     bob.setDirectionX(0);
     bob.setDirectionY(0);
   }
@@ -168,6 +196,7 @@ public void keyTyped()
 
 class SpaceShip extends Floater  
 {   
+  double originalCenterX, originalCenterY;
   SpaceShip(int x, int y)
   {
     corners = 10;
@@ -181,6 +210,8 @@ class SpaceShip extends Floater
     myColor2 = 255;
     myCenterX = x;
     myCenterY = y;
+    originalCenterX = x;
+    originalCenterY = y;
     myDirectionX = 0;
     myDirectionY = 0;
     myPointDirection = 0;
@@ -205,8 +236,8 @@ class SpaceShip extends Floater
 
     public void restartVariables() 
     {
-      myCenterX = 300;
-      myCenterY = 300;
+      myCenterX = originalCenterX;
+      myCenterY = originalCenterY;
       myDirectionX = 0;
       myDirectionY = 0;
       myPointDirection = 0;
@@ -215,7 +246,26 @@ class SpaceShip extends Floater
 
 class EnemyShip extends Floater
 {
-  public int myHealth;
+  public float myHealth;
+
+  // EnemyShip(int x, int y)
+  // {
+  //   corners = 10;
+  //   int [] xS = {14,1,-10,-4,-6,-8,-8,-4,-10,1};
+  //   int [] yS = {0,18,18,9,6,6,-6,-9,-18,-18};
+  //   xCorners = new int[corners];
+  //   yCorners = new int[corners];
+  //   xCorners = xS;
+  //   yCorners = yS;
+  //   myColor = color(239,30,11);
+  //   myColor2 = 255;
+  //   myCenterX = x;
+  //   myCenterY = y;
+  //   myDirectionX = 0;
+  //   myDirectionY = 0;
+  //   myPointDirection = 0;
+  //   myHealth = 40;
+  // }
 
   EnemyShip(int startY)
   {
@@ -250,8 +300,8 @@ class EnemyShip extends Floater
   public void move(SpaceShip ship)
   {
     myPointDirection=(Math.atan2(ship.getY()-myCenterY,ship.getX()-myCenterX))/PI*180;
-    myDirectionX = Math.cos(myPointDirection*PI/180)*3;
-    myDirectionY = Math.sin(myPointDirection*PI/180)*3;
+    myDirectionX = Math.cos(myPointDirection*PI/180)*2;
+    myDirectionY = Math.sin(myPointDirection*PI/180)*2;
     myCenterX += myDirectionX;
     myCenterY += myDirectionY;
 
@@ -632,7 +682,6 @@ class Button
 {
   private int myX, myY, myColor;
   private String myType;
-  private boolean colorSwitch = true;
 
   Button(int x, int y, String type)
   {
@@ -644,6 +693,7 @@ class Button
 
   public void show()
   {
+    noStroke();
     fill(myColor);
     rect(myX, myY, 70,70, 10);
     
@@ -679,23 +729,91 @@ class Button
       line(myX + 35, myY + 56, myX + 24, myY + 43);
       line(myX + 35, myY + 56, myX + 46, myY + 43);
     }
+
+    else if(myType == "s")
+    {
+      fill(0);
+      textSize(50);
+      text("S", myX + 20, myY + 53);
+    }
+
+    else if(myType == "r")
+    {
+      fill(0);
+      textSize(50);
+      text("R", myX + 20, myY + 53);
+    }
+
   }
   
   public void highlighted()
   {
-    if(colorSwitch == true)
-    {
-      myColor = 100;  
-      colorSwitch = false;
-    }
-    else if(colorSwitch == false)
-    {
-      myColor = 255;
-      colorSwitch = true;
-    }
-
-      
+    myColor = 100;      
   }   
+  public void nonHighlighted()
+  {
+    myColor = 255;
+  }
+}
+
+class GotItButton
+{
+  int myX, myY, myColor;
+  String myType;
+
+  GotItButton(int x, int y, String type)
+  {
+    myX = x;
+    myY = y;
+    myType = type;
+    myColor = color(229,171,232);
+  }
+
+  public void show()
+  {
+    fill(myColor);
+    rect(myX, myY, 70,40,10);
+    fill(0);
+    textSize(15);
+    if(myType == "gotIt"){text("Got It ->", myX + 4, myY + 23); }
+    if(myType == "reset"){text("Reset", myX + 13, myY + 23);}
+  }
+
+  public void highlighted()
+  {
+    myColor = color(211,63, 219);      
+  }   
+  public void nonHighlighted()
+  {
+    myColor = color(229,171,232);
+  }
+}
+class SpaceButton 
+{
+  int myX, myY, myColor;
+
+  SpaceButton()
+  {
+    myX = 100;
+    myY = 425;
+    myColor = 255;
+  }
+
+  public void show()
+  {
+    noStroke();
+    fill(myColor);
+    rect(myX, myY, 400, 70, 10);
+  }
+
+  public void highlighted()
+  {
+    myColor = 100;      
+  }   
+  public void nonHighlighted()
+  {
+    myColor = 255;
+  }
 }
 
 public void instructionsFunc()
@@ -703,6 +821,7 @@ public void instructionsFunc()
   fill(10,250,150);
   textSize(30);
   text("Instructions:", 40, 40);
+  line(35, 45, 225, 45);
   textSize(20);
   text("Go over each button to see what it does to the ship", 40, 80);
   
@@ -710,76 +829,72 @@ public void instructionsFunc()
   rightB.show();
   upB.show();
   downB.show();
+  spaceB.show();
+  gotItB.show();
+  rB.show();
+  sB.show();
+  resetB.show();
 
-  bob1.show();
   bob1.move();
-
-  //left
-  if(mouseX > 185 && mouseX < 255 && mouseY > 330 && mouseY < 400)
+  bob1.show();
+  
+  
+  for(Bullet bul : bullets)
   {
-    mouseLeftKey = true;
+    bul.move();
+    bul.show();
   }
 
-  else if(mouseX > 345 && mouseX < 415 && mouseY > 330 && mouseY < 400)
-  {
-    mouseRightKey = true;
-  }
+  if(mouseX > 185 && mouseX < 255 && mouseY > 330 && mouseY < 400){mouseLeftKey = true;}
+  else if(mouseX > 345 && mouseX < 415 && mouseY > 330 && mouseY < 400){mouseRightKey = true;}
+  else if(mouseX > 265 && mouseX < 335 && mouseY > 250 && mouseY < 320){mouseUpKey = true;}
+  else if(mouseX > 265 && mouseX < 335 && mouseY > 330 && mouseY < 400){mouseDownKey = true;}
+  else if(mouseX > 100 && mouseX < 500 && mouseY > 425 && mouseY < 495){mouseSpaceKey = true;}
+  else if(mouseX > 500 && mouseX < 570 && mouseY > 100 && mouseY < 140){mouseGotItKey = true;}
+  else if(mouseX > 50 && mouseX < 120 && mouseY > 330 && mouseY < 400){mouseSkey = true;}
+  else if(mouseX > 450 && mouseX < 520 && mouseY > 330 && mouseY < 400 && frameCount%20 == 0){mouseRkey = true;}
+  else if(mouseX > 30 && mouseX < 100 && mouseY > 100 && mouseY < 140){mouseResetKey = true;}
 
-  else if(mouseX > 265 && mouseX < 335 && mouseY > 250 && mouseY < 320)
-  {
-    mouseUpKey = true;
-  }
-
-  else if(mouseX > 265 && mouseX < 335 && mouseY > 330 && mouseY < 400)
-  {
-    mouseDownKey = true;
-  }
-
-  else
-  {
+  else {
     mouseLeftKey = false;
     mouseRightKey = false;
-    mouseRightKey = false;
+    mouseUpKey = false;
     mouseDownKey = false;
-    //bob1.setPointDirection(0);
-    // bob1.setDirectionX(0);
-    // bob1.setDirectionY(0);
-    bob1.setX(300);
-    bob1.setY(200);
+    mouseSpaceKey = false;
+    mouseGotItKey = false;
+    mouseSkey = false;
+    mouseRkey = false;
+    mouseResetKey = false;
+
+    upB.nonHighlighted();
+    downB.nonHighlighted();
+    rightB.nonHighlighted();
+    leftB.nonHighlighted();
+    spaceB.nonHighlighted();
+    sB.nonHighlighted();
+    rB.nonHighlighted();
+    gotItB.nonHighlighted();
+    resetB.nonHighlighted();
   }
 
-  if(mouseLeftKey == true)
+  if(mouseX > 450 && mouseX < 520 && mouseY > 330 && mouseY < 400){rB.highlighted();}
+
+  if(mouseLeftKey == true){bob1.turn(-5);leftB.highlighted();}
+  if(mouseRightKey == true){bob1.turn(5);rightB.highlighted();}
+  if(mouseUpKey == true){bob1.accelerate(0.1);upB.highlighted();}
+  if(mouseDownKey == true){bob1.accelerate(-0.1);downB.highlighted();}
+
+  if(mouseSpaceKey == true)
   {
-    bob1.setDirectionX(0);
-    bob1.setDirectionY(0);
-    bob1.turn(-5);
+    spaceB.highlighted();
+    if(frameCount % 4 == 0)
+      bullets.add(new Bullet(bob1));
   }
 
-  if(mouseRightKey == true)
-  {
-    bob1.setDirectionX(0);
-    bob1.setDirectionY(0);
-    bob1.turn(5);
-  }
-
-  if(mouseUpKey == true)
-  {
-    bob1.accelerate(0.1);
-  }
-
-  if(mouseDownKey == true)
-  {
-    bob1.accelerate(-0.1);
-  }
-
-
-
-  /*
-  Button leftB = new Button(185,330,"left");
-Button rightB = new Button(345,330,"right");
-Button upB = new Button(265,250, "up");
-Button downB = new Button(265,330, "down");
-*/
+  if(mouseSkey == true){bob1.setDirectionX(0);bob1.setDirectionY(0);sB.highlighted();}
+  if(mouseRkey == true){bob1.setX((int)(Math.random()*width));bob1.setY((int)(Math.random()*height));bob1.setPointDirection((int)(Math.random()*360));bob1.setDirectionX(0);bob1.setDirectionY(0);}
+  if(mouseGotItKey == true){gotItB.highlighted();}
+  if(mouseResetKey == true){resetB.highlighted();}
 }
 
 public void beginGameFunc()
@@ -1030,79 +1145,6 @@ public void level1Func()
   rect(0, 0, 2*healthLength, 25);
 }
 
-public void endGameFunc()
-{
-  if(score > maxScore)
-      maxScore = score;
-
-    textSize(30);
-    fill(0,0,255);
-    text("Max Score: " + maxScore, 215, 200);
-    fill(255,0,0);
-    text("GAME OVER", 215, 300);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
-
-    for(int i = 0; i<bullets.size(); i++)
-      bullets.remove(i);
-    
-    for(int i = 0; i<smallAsteroidsList.size(); i++)
-      smallAsteroidsList.remove(i);
-
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-      evenSmallerAsteroidsList.remove(i);
-
-    for(int i = 0; i<flyingBitsList.size(); i++)
-      flyingBitsList.remove(i);
-
-    for(int i = 0; i<asteroidsList.size(); i++)
-      asteroidsList.remove(i);
-
-    bob.restartVariables();
-
-    for(Stars star : backgroundStars)
-      star.restartVariables();
-
-    score = 0;
-    crab.restartVariables(5);
-}
-
-public void wonGameFunc()
-{
-  textSize(30);
-    text("You won!!!", 250,250);
-    fill(255,0,0);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
-
-    for(int i = 0; i<bullets.size(); i++)
-      bullets.remove(i);
-    
-    for(int i = 0; i<smallAsteroidsList.size(); i++)
-      smallAsteroidsList.remove(i);
-
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-      evenSmallerAsteroidsList.remove(i);
-
-    for(int i = 0; i<flyingBitsList.size(); i++)
-      flyingBitsList.remove(i);
-
-    for(int i = 0; i<asteroidsList.size(); i++)
-      asteroidsList.remove(i);
-
-    bob.restartVariables();
-
-    for(Stars star : backgroundStars)
-      star.restartVariables();
-
-    score = 0;
-
-    crab.restartVariables(5);
-
-}
-
 public void level2Func()
 {
 
@@ -1136,10 +1178,11 @@ public void level2Func()
   crab.move(bob);
   crab.show();
 
-  //crab2.move(bob);
-  //crab2.show();
 
   double distanceShipEnemy = dist(bob.getX(), bob.getY(), crab.getX(), crab.getY());
+
+  // if(frameCount % 10 == 0)
+  //   enemyBullets.add(new Bullet(crab));
 
   if(distanceShipEnemy < 15)
   {
@@ -1226,7 +1269,7 @@ public void level2Func()
 
     if(distEnemyBullet < 15)
     {
-      crab.myHealth -= 1;
+      crab.myHealth -= 0.5;
     }
   }
 
@@ -1237,4 +1280,78 @@ public void level2Func()
   fill(0,255,0);
   rect(0, 0, 2*healthLength, 25);
 }
+
+public void endGameFunc()
+{
+  if(score > maxScore)
+      maxScore = score;
+
+    textSize(30);
+    fill(0,0,255);
+    text("Max Score: " + maxScore, 215, 200);
+    fill(255,0,0);
+    text("GAME OVER", 215, 300);
+    rect(200,   400,  200,  70, 10);
+    fill(255);
+    text("Restart", 245,445);
+
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
+
+    bob.restartVariables();
+
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
+    score = 0;
+    crab.restartVariables(5);
+}
+
+public void wonGameFunc()
+{
+  textSize(30);
+    text("You won!!!", 250,250);
+    fill(255,0,0);
+    rect(200,   400,  200,  70, 10);
+    fill(255);
+    text("Restart", 245,445);
+
+    for(int i = 0; i<bullets.size(); i++)
+      bullets.remove(i);
+    
+    for(int i = 0; i<smallAsteroidsList.size(); i++)
+      smallAsteroidsList.remove(i);
+
+    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+      evenSmallerAsteroidsList.remove(i);
+
+    for(int i = 0; i<flyingBitsList.size(); i++)
+      flyingBitsList.remove(i);
+
+    for(int i = 0; i<asteroidsList.size(); i++)
+      asteroidsList.remove(i);
+
+    bob.restartVariables();
+
+    for(Stars star : backgroundStars)
+      star.restartVariables();
+
+    score = 0;
+
+    crab.restartVariables(5);
+}
+
+
 
