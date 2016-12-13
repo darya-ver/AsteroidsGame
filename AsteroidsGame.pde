@@ -11,21 +11,23 @@ ArrayList<EvenSmallerAsteroids> evenSmallerAsteroidsList = new ArrayList<EvenSma
 ArrayList<FlyingBits> flyingBitsList = new ArrayList<FlyingBits>();
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 ArrayList<Bullet> enemyBullets = new ArrayList<Bullet>();
+ArrayList<TearDrop> tearDrops = new ArrayList<TearDrop>();
+ArrayList<Confetti> confettiList = new ArrayList<Confetti>();
 
 //number vairables
 int healthLength = 150;
-int numberOfAsteroids = 5;
+int numberOfAsteroids = 1;
 int score = 0;
 int maxScore = 0;
 int timeForBullets = 0;
 
 //different part of game functions
-boolean instructions = true;
+boolean instructions = false;
 boolean beginGame = false;
 boolean level1 = false;
 boolean level2 = false;
 boolean endGame = false;
-boolean wonGame = false;
+boolean wonGame = true;
 
 //key pressed booleans
 boolean leftKeyPressed = false;
@@ -45,6 +47,9 @@ boolean mouseSkey = false;
 boolean mouseRkey = false;
 boolean mouseResetKey = false;
 
+//if mouse hovers for Restart booolean
+boolean mouseRestartButton = false;
+
 //buttons in instructions
 Button leftB = new Button(185,330,"left");
 Button rightB = new Button(345,330,"right");
@@ -55,6 +60,10 @@ Button rB = new Button(450, 330, "r");
 GotItButton resetB = new GotItButton(30, 100, "reset");
 GotItButton gotItB = new GotItButton(500,100, "gotIt");
 SpaceButton spaceB = new SpaceButton();
+
+//Restart buttons
+GameRestart gr1 = new GameRestart();
+GameRestart gr2 = new GameRestart();
 
 
 public void setup() 
@@ -70,6 +79,16 @@ public void setup()
   for (int i=0; i<numberOfAsteroids; i++)
   {
     asteroidsList.add(new Asteroids());
+  }
+
+  for (int i = 0; i< 20; i++)
+  {
+    tearDrops.add(new TearDrop());
+  }
+  
+  for(int i = 0; i<40; i++)
+  {
+    confettiList.add(new Confetti());
   }
 }
 
@@ -89,14 +108,17 @@ public void mouseClicked()
 {
   if(instructions == true)
   {
+    //starts the game
     if(mouseX > 500 && mouseX < 570 && mouseY > 100 && mouseY < 140)
     {
       beginGame = true;
       instructions = false;
     }
+    //restarts demo bob's variables on the screen
     if(mouseX > 30 && mouseX < 100 && mouseY > 100 && mouseY < 140)
     {bob1.restartVariables();}
   }
+
   if(endGame == true || wonGame == true)
   {
     if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
@@ -180,7 +202,10 @@ public void keyReleased()
   }
 
   if (key == ' ')
+  {
     spaceKeyPressed = false;
+    timeForBullets = 0;
+  }
 }
 
 public void keyTyped()
@@ -757,6 +782,35 @@ class Button
   }
 }
 
+class GameRestart
+{
+  int myColor;
+
+  GameRestart()
+  {
+    myColor = color(224, 74, 69);
+  }
+
+  void show()
+  {
+    fill(myColor);
+    rect(200, 400, 200, 70,10);
+    fill(255);
+    textSize(30);
+    text("Restart", 245,445);
+  }
+
+  void nonHighlighted()
+  {
+    myColor = color(224, 74, 69);
+  }
+
+  void highlighted()
+  {
+    myColor = color(242, 40, 33);
+  }
+}
+
 class GotItButton
 {
   int myX, myY, myColor;
@@ -789,6 +843,7 @@ class GotItButton
     myColor = color(229,171,232);
   }
 }
+
 class SpaceButton 
 {
   int myX, myY, myColor;
@@ -817,6 +872,7 @@ class SpaceButton
   }
 }
 
+
 public void instructionsFunc()
 {
   fill(10,250,150);
@@ -825,6 +881,7 @@ public void instructionsFunc()
   line(35, 45, 225, 45);
   textSize(20);
   text("Go over each button to see what it does to the ship", 40, 80);
+  text("Goal: Avoid the asteroids and hit them with the bullets", 40, 560);
   
   leftB.show();
   rightB.show();
@@ -957,55 +1014,101 @@ public void level1Func()
   if(rightKeyPressed == true)
     bob.turn(5);
 
+  if(spaceKeyPressed == true)
+  {
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob));
+  }
+
+  //if left and up presed
   if(leftKeyPressed == true && upKeyPressed == true)
   {
     bob.turn(-5);
     bob.accelerate(0.1);
   }
 
+  //if right and up pressed
   if(rightKeyPressed == true && upKeyPressed == true)
   {
     bob.turn(5);
     bob.accelerate(0.1);
   }
 
+  //if right and down pressed
   if(rightKeyPressed == true && downKeyPressed == true)
   {
     bob.turn(5);
     bob.accelerate(-0.1);
   }
 
+  //if left and down pressed
   if(leftKeyPressed == true && downKeyPressed == true)
   {
     bob.turn(-5);
     bob.accelerate(-0.1);
   }
 
-  if(spaceKeyPressed == true && (frameCount % 20) == 0)
-    bullets.add(new Bullet(bob));
-
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %20) == 0)
+  //if left and space pressed
+  if(leftKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(-5);
-    bullets.add(new Bullet(bob));
+    bob.turn(-2);
+
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if right and space pressed
+  if(rightKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(5);
-    bullets.add(new Bullet(bob));
+    bob.turn(2);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob));  
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if up and space pressed
+  if(upKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(5);
-    bullets.add(new Bullet(bob));
+    bob.accelerate(0.1);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if down and space pressed
+  if(downKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(-5);
-    bullets.add(new Bullet(bob));
+    bob.accelerate(-0.1);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
   //moves and shows bullets
@@ -1199,55 +1302,101 @@ public void level2Func()
   if(rightKeyPressed == true)
     bob.turn(5);
 
+  if(spaceKeyPressed == true)
+  {
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob));
+  }
+
+  //if left and up presed
   if(leftKeyPressed == true && upKeyPressed == true)
   {
     bob.turn(-5);
     bob.accelerate(0.1);
   }
 
+  //if right and up pressed
   if(rightKeyPressed == true && upKeyPressed == true)
   {
     bob.turn(5);
     bob.accelerate(0.1);
   }
 
+  //if right and down pressed
   if(rightKeyPressed == true && downKeyPressed == true)
   {
     bob.turn(5);
     bob.accelerate(-0.1);
   }
 
+  //if left and down pressed
   if(leftKeyPressed == true && downKeyPressed == true)
   {
     bob.turn(-5);
     bob.accelerate(-0.1);
   }
 
-  if(spaceKeyPressed == true && (frameCount % 20) == 0)
-    bullets.add(new Bullet(bob));
-
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount %20) == 0)
+  //if left and space pressed
+  if(leftKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(-5);
-    bullets.add(new Bullet(bob));
+    bob.turn(-2);
+
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if right and space pressed
+  if(rightKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(5);
-    bullets.add(new Bullet(bob));
+    bob.turn(2);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob));  
   }
 
-  if(rightKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if up and space pressed
+  if(upKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(5);
-    bullets.add(new Bullet(bob));
+    bob.accelerate(0.1);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
-  if(leftKeyPressed == true && spaceKeyPressed == true  && (frameCount % 20) == 0)
+  //if down and space pressed
+  if(downKeyPressed == true && spaceKeyPressed == true)
   {
-    bob.turn(-5);
-    bullets.add(new Bullet(bob));
+    bob.accelerate(-0.1);
+    timeForBullets += 1;
+    if (timeForBullets >= 5)
+    {
+      if((frameCount %20) == 0)
+        bullets.add(new Bullet(bob));
+    }
+    else
+      bullets.add(new Bullet(bob)); 
   }
 
   //moves and shows bullets
@@ -1282,19 +1431,37 @@ public void level2Func()
   rect(0, 0, 2*healthLength, 25);
 }
 
+
 public void endGameFunc()
 {
+  // tearDrops.add(new TearDrop());
+
+  for(TearDrop drop : tearDrops)
+  {
+    drop.show();
+    drop.move();
+  }
+
   if(score > maxScore)
       maxScore = score;
 
     textSize(30);
     fill(0,0,255);
     text("Max Score: " + maxScore, 215, 200);
-    fill(255,0,0);
-    text("GAME OVER", 215, 300);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
+    fill(150);
+    textSize(60);
+    text("GAME OVER", 130, 315);
+    
+    gr1.show();
+
+    if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+    {
+      gr1.highlighted();
+    }
+    else 
+    {
+      gr1.nonHighlighted();
+    }
 
     for(int i = 0; i<bullets.size(); i++)
       bullets.remove(i);
@@ -1322,37 +1489,141 @@ public void endGameFunc()
 
 public void wonGameFunc()
 {
+  for (Confetti confett : confettiList)
+  {
+    confett.show();
+    confett.move();
+  }
+
   textSize(30);
-    text("You won!!!", 250,250);
-    fill(255,0,0);
-    rect(200,   400,  200,  70, 10);
-    fill(255);
-    text("Restart", 245,445);
+  fill(255);
+  text("You won!!!", 250,250);
+  fill(255,0,0);
 
-    for(int i = 0; i<bullets.size(); i++)
-      bullets.remove(i);
-    
-    for(int i = 0; i<smallAsteroidsList.size(); i++)
-      smallAsteroidsList.remove(i);
+  gr2.show();
 
-    for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
-      evenSmallerAsteroidsList.remove(i);
+  if (mouseY < 470 && mouseY > 400 && mouseX < 400 && mouseX > 200)
+  {
+    gr2.highlighted();
+  }
+  else 
+  {
+    gr2.nonHighlighted();
+  }
 
-    for(int i = 0; i<flyingBitsList.size(); i++)
-      flyingBitsList.remove(i);
+  for(int i = 0; i<bullets.size(); i++)
+    bullets.remove(i);
+  
+  for(int i = 0; i<smallAsteroidsList.size(); i++)
+    smallAsteroidsList.remove(i);
 
-    for(int i = 0; i<asteroidsList.size(); i++)
-      asteroidsList.remove(i);
+  for(int i = 0; i<evenSmallerAsteroidsList.size(); i++)
+    evenSmallerAsteroidsList.remove(i);
 
-    bob.restartVariables();
+  for(int i = 0; i<flyingBitsList.size(); i++)
+    flyingBitsList.remove(i);
 
-    for(Stars star : backgroundStars)
-      star.restartVariables();
+  for(int i = 0; i<asteroidsList.size(); i++)
+    asteroidsList.remove(i);
 
-    score = 0;
+  bob.restartVariables();
 
-    crab.restartVariables(5);
+  for(Stars star : backgroundStars)
+    star.restartVariables();
+
+  score = 0;
+
+  crab.restartVariables(5);
 }
+
+class TearDrop
+{
+  int myX, myY, mySpeed;
+  TearDrop()
+  {
+    myX = (int)(Math.random()*width);
+    myY = -(int)(Math.random()*height);
+    mySpeed = (int)(Math.random()*4)+2;
+  }
+  
+  void show()
+  {
+    fill(94, 140, 214);
+    noStroke();
+    triangle(myX + 15, myY + 60 , myX-15, myY + 60, myX, myY);
+    ellipse(myX, myY + 60, 30,30);
+    
+  }
+
+  void move()
+  {
+    myY += mySpeed;
+
+    if(myY >= height)
+    {
+      myY = -60;
+    }
+  }
+}
+
+class Confetti
+{
+  int myX, myY, myColor, mySpeed;
+  Confetti()
+  {
+    myX = (int)(Math.random()*width);
+    //myY = -(int)(Math.random()*height);
+    myY = 50;
+    myColor = color((int)Math.random()*255,(int)Math.random()*255,(int)Math.random()*255);
+    mySpeed = (int)(Math.random()*4)+2;
+  }
+
+  void show()
+  {
+    noStroke();
+    fill(myColor);
+    rect(myX, myY, 50, 50);
+  }
+
+  void move()
+  {
+    myY += mySpeed;
+
+    if(myY >= height)
+    {
+      myY = -60;
+    }
+  }
+}
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
