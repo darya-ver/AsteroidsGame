@@ -22,12 +22,12 @@ int maxScore = 0;
 int timeForBullets = 0;
 
 //different part of game functions
-boolean instructions = false;
+boolean instructions = true;
 boolean beginGame = false;
 boolean level1 = false;
 boolean level2 = false;
 boolean endGame = false;
-boolean wonGame = true;
+boolean wonGame = false;
 
 //key pressed booleans
 boolean leftKeyPressed = false;
